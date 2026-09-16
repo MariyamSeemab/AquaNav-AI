@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather with Sea Background</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* 🌊 Sea background */
+    .sea-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(to top, #1e90ff 70%, #87cefa);
+      overflow: hidden;
+      z-index: -2;
+    }
+
+    .wave-layer {
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 200%; height: 200px;
+      background: url('https://freepngimg.com/save/110541-white-wave-free-hq-image/1280x640') repeat-x;
+      background-size: 900px 180px;
+      animation: sea-wave 6s linear infinite;
+      opacity: 0.6;
+    }
+    .wave-layer:nth-child(2) { animation-duration: 10s; opacity: 0.4; }
+    .wave-layer:nth-child(3) { animation-duration: 14s; opacity: 0.3; }
+    .wave-layer:nth-child(4) { animation-duration: 20s; opacity: 0.2; }
+
+    @keyframes sea-wave {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ⛴ Boat animation */
+    .boat {
+      position: absolute;
+      width: 220px;
+      bottom: 110px;
+      left: -260px;
+      animation: sail 30s linear infinite;
+      z-index: 1;
+    }
+    @keyframes sail {
+      0% { left: -260px; transform: translateY(0) rotate(-1deg); }
+      25% { transform: translateY(-10px) rotate(2deg); }
+      50% { transform: translateY(0) rotate(-1deg); }
+      75% { transform: translateY(-8px) rotate(1deg); }
+      100% { left: 110%; transform: translateY(0) rotate(-1deg); }
+    }
+
+    /* 🐟 Fish jump animation */
+    .fish {
+      position: absolute;
+      width: 80px;
+      animation: jump 4s ease-in-out infinite;
+      z-index: 3;
+    }
+    .fish1 { left: 20%; bottom: 80px; animation-delay: 0s; }
+    .fish2 { left: 50%; bottom: 90px; animation-delay: 1s; }
+    .fish3 { left: 75%; bottom: 70px; animation-delay: 2s; }
+
+    @keyframes jump {
+      0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      40% { transform: translateY(-120px) rotate(20deg); opacity: 1; }
+      60% { transform: translateY(-60px) rotate(-15deg); opacity: 1; }
+      90% { opacity: 0; }
+      100% { transform: translateY(0) rotate(0deg); opacity: 0; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center relative">
+
+  <!-- 🌊 Animated Sea Background -->
+  <div class="sea-bg">
+    <img src="https://png.pngtree.com/png-vector/20250724/ourmid/pngtree-blue-and-red-hand-drawn-style-cruise-ship-ocean-fishing-boat-png-image_16813173.webp" 
+         alt="Boat" class="boat" />
+    <img src="https://png.pngtree.com/png-vector/20241009/ourmid/pngtree-ilish-fish-vector-png-image_14031528.png" 
+         class="fish fish1" alt="Fish" />
+    <img src="https://png.pngtree.com/png-vector/20241009/ourmid/pngtree-ilish-fish-vector-png-image_14031528.png" 
+         class="fish fish2" alt="Fish" />
+    <img src="https://png.pngtree.com/png-vector/20241009/ourmid/pngtree-ilish-fish-vector-png-image_14031528.png" 
+         class="fish fish3" alt="Fish" />
+    <div class="wave-layer"></div>
+    <div class="wave-layer"></div>
+    <div class="wave-layer"></div>
+    <div class="wave-layer"></div>
+  </div>
+
+  <!-- 🌤 Weather App Box -->
+  <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center relative z-10">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">🌤 Weather</h1>
+
+    <!-- Input Section -->
+    <div class="flex flex-col sm:flex-row gap-3 mb-4">
+      <input 
+        type="text" 
+        id="city" 
+        placeholder="Enter city"
+        class="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-400 outline-none"
+      >
+      <button 
+        onclick="getWeather()"
+        class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">
+        Search
+      </button>
+    </div>
+
+    <!-- Current Location Button -->
+    <button 
+      onclick="getLocationWeather()" 
+      class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition mb-6">
+      📍 Use My Location
+    </button>
+
+    <!-- Weather Result -->
+    <div id="weather" class="text-lg text-gray-700"></div>
+  </div>
+
+  <script>
+    const apiKey = "86037b1cf14f954df330ba46aa831a13"; // Replace with your API key
+
+    // 🌆 Get weather by city
+    async function getWeather() {
+      const city = document.getElementById("city").value;
+      if (!city) {
+        document.getElementById("weather").innerHTML = `<p class="text-red-500">⚠️ Please enter a city</p>`;
+        return;
+      }
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+      fetchWeather(url);
+    }
+
+    // 📍 Get weather by location
+    function getLocationWeather() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(success, error);
+      } else {
+        document.getElementById("weather").innerHTML = `<p class="text-red-500">❌ Geolocation not supported</p>`;
+      }
+
+      function success(position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric`;
+        fetchWeather(url);
+      }
+
+      function error() {
+        document.getElementById("weather").innerHTML = `<p class="text-red-500">❌ Unable to retrieve location</p>`;
+      }
+    }
+
+    // 🌤 Fetch weather data
+    async function fetchWeather(url) {
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("City not found or API error");
+        const data = await response.json();
+
+        document.getElementById("weather").innerHTML = `
+          <div class="bg-gray-100 rounded-xl p-6 shadow-md">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-2">${data.name}, ${data.sys.country}</h2>
+            <p class="text-lg">🌡 <span class="font-bold">${data.main.temp} °C</span></p>
+            <p>☁ ${data.weather[0].description}</p>
+            <p>💨 Wind Speed: ${data.wind.speed} m/s</p>
+          </div>
+        `;
+      } catch (error) {
+        document.getElementById("weather").innerHTML = `<p class="text-red-500">${error.message}</p>`;
+      }
+    }
+  </script>
+</body>
+</html>

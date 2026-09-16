@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Fish Freshness Detection</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: transparent;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* --- Background Layers --- */
+    .sea-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(to top, #1e90ff 70%, #87cefa);
+      overflow: hidden;
+      z-index: -2;
+    }
+
+    .wave-layer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 200%;
+      height: 200px;
+      background: url('https://freepngimg.com/save/110541-white-wave-free-hq-image/1280x640') repeat-x;
+      background-size: 400px 200px;
+      animation: sea-wave 6s linear infinite;
+      opacity: 0.6;
+    }
+
+    .wave-layer:nth-child(2) {
+      animation-duration: 12s;
+      opacity: 0.4;
+    }
+
+    @keyframes sea-wave {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .boat {
+      position: absolute;
+      width: 220px;
+      bottom: 110px;
+      left: -260px;
+      animation: sail 30s linear infinite;
+      z-index: 1;
+    }
+
+    @keyframes sail {
+      0%   { left: -260px; transform: translateY(0) rotate(-1deg); }
+      25%  { transform: translateY(-10px) rotate(2deg); }
+      50%  { transform: translateY(0) rotate(-1deg); }
+      75%  { transform: translateY(-8px) rotate(1deg); }
+      100% { left: 110%; transform: translateY(0) rotate(-1deg); }
+    }
+
+    .fish {
+      position: absolute;
+      width: 80px;
+      animation: jump 4s ease-in-out infinite;
+      z-index: 3;
+    }
+
+    .fish1 { left: 20%; bottom: 80px; animation-delay: 0s; }
+    .fish2 { left: 50%; bottom: 90px; animation-delay: 1s; }
+    .fish3 { left: 75%; bottom: 70px; animation-delay: 2s; }
+
+    @keyframes jump {
+      0%, 100% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      40% { transform: translateY(-120px) rotate(20deg); opacity: 1; }
+      60% { transform: translateY(-60px) rotate(-15deg); opacity: 0.9; }
+    }
+
+    /* --- Helpline Bar --- */
+    .helpline-bar {
+      position: sticky;
+      top: 10px;
+      background: linear-gradient(90deg, #077d00, #128371);
+      color: #fff;
+      font-weight: 600;
+      font-size: 1em;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      z-index: 1000;
+      width: 95%;
+      max-width: 990px;
+      margin: 0 auto 20px auto;
+      padding-left: 12px;
+      border-radius: 8px;
+    }
+
+    .marquee-content {
+      display: inline-block;
+      white-space: nowrap;
+      will-change: transform;
+      animation: marquee 20s linear infinite;
+      user-select: none;
+    }
+
+    @keyframes marquee {
+      0%   { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+
+    .helpline-bar .fa-phone {
+      margin: 0 8px 0 6px;
+      color: #ffdf00;
+    }
+
+    /* --- Main Container --- */
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      z-index: 10;
+      position: relative;
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    input[type="file"] {
+      display: block;
+      margin: 20px auto;
+    }
+
+    #start-btn, #webcam-btn, #stop-webcam-btn {
+      display: block;
+      margin: 10px auto;
+      padding: 10px 20px;
+      background-color: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    #start-btn:hover, #webcam-btn:hover, #stop-webcam-btn:hover {
+      background-color: #2980b9;
+    }
+
+    .prediction {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #f4f4f4;
+      border-radius: 5px;
+    }
+
+    .prediction div {
+      margin: 5px 0;
+      font-size: 16px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .loading {
+      text-align: center;
+      font-size: 18px;
+      color: #3498db;
+    }
+
+    #image-preview {
+      margin: 20px auto;
+      text-align: center;
+    }
+
+    #image-preview img {
+      max-width: 100%;
+      max-height: 300px;
+      margin-top: 20px;
+      border-radius: 8px;
+    }
+
+    #webcam-container {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    #result-message {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      color: green;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background -->
+  <div class="sea-bg">
+<!--     
+    <img src="https://png.pngtree.com/png-vector/20250724/ourmid/pngtree-blue-and-red-hand-drawn-style-cruise-ship-ocean-fishing-boat-png-image_16813173.webp" alt="Boat" class="boat" />
+    <img src="https://png.pngtree.com/png-vector/20241009/ourmid/pngtree-ilish-fish-vector-png-image_14031528.png" class="fish fish1" alt="Fish" />
+    <img src="https://png.pngtree.com/png-vector/20241009/ourmid/pngtree-ilish-fish-vector-png-image_14031528.png" class="fish fish2" alt="Fish" />
+    <img src="https://png.pngtree.com/png-vector/20241009/ourmid/pngtree-ilish-fish-vector-png-image_14031528.png" class="fish fish3" alt="Fish" />
+    <div class="wave-layer"></div> -->
+    <div class="wave-layer"></div>
+  </div>
+
+  <!-- Helpline -->
+  <div class="helpline-bar">
+    <span class="marquee-content">
+      <i class="fa fa-phone"></i> Emergency Helpline: Dial 112 | Traffic: 7738393839 | Coastal: 1093 | Cyber: 1930 | Women: 103 | Senior Citizen: 1090
+    </span>
+  </div>
+
+  <!-- Main App -->
+  <div class="container">
+    <h2>Fish Freshness Detection</h2>
+
+    <input type="file" id="file-upload" accept="image/*">
+    <div id="image-preview"><p>No image selected</p></div>
+
+    <button id="start-btn">Start Classification</button>
+    <button id="webcam-btn">Start Webcam</button>
+    <button id="stop-webcam-btn" style="display: none;">Stop Webcam</button>
+
+    <div class="loading" id="loading" style="display: none;">Loading model...</div>
+    <div id="webcam-container"></div>
+    <div id="label-container" class="prediction"></div>
+    <div id="result-message"></div>
+  </div>
+
+  <!-- TensorFlow + Teachable Machine -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+
+  <script>
+    const URL = "https://teachablemachine.withgoogle.com/models/-0lYiKgSc/";
+    let model, labelContainer, maxPredictions, image, webcam, isWebcamRunning = false;
+
+    async function loadModel() {
+      const modelURL = URL + "model.json";
+      const metadataURL = URL + "metadata.json";
+      document.getElementById("loading").style.display = "block";
+      model = await tmImage.load(modelURL, metadataURL);
+      maxPredictions = model.getTotalClasses();
+      document.getElementById("loading").style.display = "none";
+
+      labelContainer = document.getElementById("label-container");
+      labelContainer.innerHTML = "";
+      for (let i = 0; i < maxPredictions; i++) {
+        labelContainer.appendChild(document.createElement("div"));
+      }
+    }
+
+    document.getElementById("file-upload").addEventListener("change", function (event) {
+      const file = event.target.files[0];
+      if (file) {
+        image = new Image();
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          image.src = e.target.result;
+          document.getElementById("image-preview").innerHTML = `<img src="${e.target.result}" alt="Preview Image">`;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    document.getElementById("start-btn").addEventListener("click", async function () {
+      if (!image) {
+        alert("Please upload an image first.");
+        return;
+      }
+      if (!model) await loadModel();
+      await predict(image);
+    });
+
+    document.getElementById("webcam-btn").addEventListener("click", async function () {
+      if (!model) await loadModel();
+      const flip = true;
+      webcam = new tmImage.Webcam(300, 300, flip);
+      await webcam.setup();
+      await webcam.play();
+      isWebcamRunning = true;
+      window.requestAnimationFrame(loop);
+      document.getElementById("webcam-container").innerHTML = "";
+      document.getElementById("webcam-container").appendChild(webcam.canvas);
+      document.getElementById("stop-webcam-btn").style.display = "block";
+    });
+
+    document.getElementById("stop-webcam-btn").addEventListener("click", async function () {
+      if (webcam && isWebcamRunning) {
+        await webcam.stop();
+        isWebcamRunning = false;
+        document.getElementById("webcam-container").innerHTML = "<p>Webcam stopped</p>";
+        document.getElementById("stop-webcam-btn").style.display = "none";
+      }
+    });
+
+    async function loop() {
+      if (isWebcamRunning) {
+        webcam.update();
+        await predict(webcam.canvas);
+        window.requestAnimationFrame(loop);
+      }
+    }
+
+    async function predict(imgSource) {
+      const prediction = await model.predict(imgSource);
+      let bestPrediction = prediction[0];
+      for (let i = 1; i < prediction.length; i++) {
+        if (prediction[i].probability > bestPrediction.probability) {
+          bestPrediction = prediction[i];
+        }
+      }
+
+      for (let i = 0; i < maxPredictions; i++) {
+        const classPrediction =
+          prediction[i].className.replace(/_/g, " ") + ": " + (prediction[i].probability * 100).toFixed(2) + "%";
+        labelContainer.childNodes[i].innerHTML = classPrediction;
+      }
+
+      document.getElementById("result-message").innerText =
+        "The predicted class is: " + bestPrediction.className.replace(/_/g, " ");
+    }
+
+    window.onload = loadModel;
+  </script>
+</body>
+</html>

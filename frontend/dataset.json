@@ -1,0 +1,218 @@
+[
+  {
+    "species": "Indian Mackerel",
+    "location": "Maharashtra",
+    "season": "Monsoon",
+    "technique": "Ring Net",
+    "lat": 18.5,
+    "lon": 72.8,
+    "image": "Indian Mackerel.png"
+  },
+  {
+    "species": "Oil Sardine",
+    "location": "Kerala",
+    "season": "Monsoon",
+    "technique": "Gill Net",
+    "lat": 9.8,
+    "lon": 75.8,
+    "image": "Oil Sardine.png"
+  },
+  {
+    "species": "Pomfret",
+    "location": "Goa",
+    "season": "Winter",
+    "technique": "Trawl Net",
+    "lat": 15.5,
+    "lon": 73.7,
+    "image": "Pomfret.png"
+  },
+  {
+    "species": "Seer Fish",
+    "location": "Tamil Nadu",
+    "season": "Summer",
+    "technique": "Long Line",
+    "lat": 10.5,
+    "lon": 80.5,
+    "image": "SeerFish.png"
+  },
+  {
+    "species": "Hilsa",
+    "location": "West Bengal",
+    "season": "Monsoon",
+    "technique": "Drift Net",
+    "lat": 21.5,
+    "lon": 88.3,
+    "image": "Hilsa.png"
+  },
+  {
+    "species": "Rohu",
+    "location": "Assam",
+    "season": "Post-Monsoon",
+    "technique": "Cast Net",
+    "lat": 26.1,
+    "lon": 91.7,
+    "image": "RohuI.png"
+  },
+  {
+    "species": "Catla",
+    "location": "Bihar",
+    "season": "Monsoon",
+    "technique": "Gill Net",
+    "lat": 25.2,
+    "lon": 85.9,
+    "image": "CatlaI.png"
+  },
+  {
+    "species": "Pangasius",
+    "location": "West Bengal (Hooghly)",
+    "season": "Winter",
+    "technique": "Trap Net",
+    "lat": 22.9,
+    "lon": 88.3,
+    "image": "PangasiusI.png"
+  },
+  {
+    "species": "Kingfish",
+    "location": "Andhra Pradesh",
+    "season": "Summer",
+    "technique": "Long Line",
+    "lat": 15.9,
+    "lon": 80.3,
+    "image": "KingfishI.png"
+  },
+  {
+    "species": "Barramundi",
+    "location": "Odisha",
+    "season": "Monsoon",
+    "technique": "Gill Net",
+    "lat": 20.3,
+    "lon": 85.8,
+    "image": "BarramundiI.png"
+  },
+  {
+    "species": "Tilapia",
+    "location": "Kerala (Backwaters)",
+    "season": "Post-Monsoon",
+    "technique": "Cast Net",
+    "lat": 10.0,
+    "lon": 76.3,
+    "image": "TilapiaI.png"
+  },
+  {
+    "species": "Pomfret (Black)",
+    "location": "Gujarat",
+    "season": "Winter",
+    "technique": "Trawl Net",
+    "lat": 21.7,
+    "lon": 72.1,
+    "image": "BlackPomfret.png"
+  },
+  {
+    "species": "Yellowfin Tuna",
+    "location": "Lakshadweep",
+    "season": "Summer",
+    "technique": "Hand Line",
+    "lat": 11.7,
+    "lon": 72.6,
+    "image": "YellowfishTuna.png"
+  },
+  {
+    "species": "Indian Salmon",
+    "location": "Goa",
+    "season": "Monsoon",
+    "technique": "Indian Salmon Trolling with deep-diving plugs, bait fishing with live sardines/mackere",
+    "lat": 15.4,
+    "lon": 73.8,
+    "image": "IndianSalmon.png"
+  },
+  {
+    "species": "Mrigal",
+    "location": "Tamil Nadu (Cauvery)",
+    "season": "Winter",
+    "technique": "Trap Net",
+    "lat": 11.0,
+    "lon": 78.5,
+    "image": "Mrigal.png"
+  },
+  {
+    "species": "Catfish",
+    "location": "Punjab",
+    "season": "Post-Monsoon",
+    "technique": "Drift Net",
+    "lat": 31.1,
+    "lon": 75.7,
+    "image": "CatfishI.png"
+  },
+  {
+    "species": "Indian Threadfin",
+    "location": "Tamil Nadu (Chennai)",
+    "season": "Winter",
+    "technique": "Gill Net",
+    "lat": 13.1,
+    "lon": 80.3,
+    "image": "Indian Threadfin.png"
+  },
+  {
+    "species": "Bombay Duck",
+    "location": "Maharashtra (Mumbai Coast)",
+    "season": "Monsoon",
+    "technique": "Drag Net",
+    "lat": 19.0,
+    "lon": 72.8,
+    "image": "Bombay_Duck.png"
+  },
+  {
+    "species": "Butterfish",
+    "location": "Kerala (Kochi)",
+    "season": "Summer",
+    "technique": "Ring Net",
+    "lat": 9.9,
+    "lon": 76.3,
+    "image": "Butterfish.png"
+  },
+  {
+    "species": "Ribbonfish",
+    "location": "Odisha (Paradeep)",
+    "season": "Winter",
+    "technique": "Long Line",
+    "lat": 20.3,
+    "lon": 86.4,
+    "image": "RibbionFish.png"
+  },
+  {
+    "species": "Tuna (Skipjack)",
+    "location": "Andaman & Nicobar",
+    "season": "Winter",
+    "technique": "Hand Line",
+    "lat": 11.6,
+    "lon": 92.7,
+    "image": "Tuna.png"
+  },
+  {
+    "species": "King Crab",
+    "location": "Gujarat (Gulf of Kutch)",
+    "season": "Monsoon",
+    "technique": "Trap Net",
+    "lat": 22.5,
+    "lon": 70.0,
+    "image": "King_Crab.png"
+  },
+  {
+    "species": "Mahi Mahi",
+    "location": "Lakshadweep",
+    "season": "Summer",
+    "technique": "Long Line",
+    "lat": 10.8,
+    "lon": 72.6,
+    "image": "Mahi_Mahi.png"
+  },
+  {
+    "species": "Pomfret (White)",
+    "location": "Goa (Panaji)",
+    "season": "Winter",
+    "technique": "Trawl Net",
+    "lat": 15.5,
+    "lon": 73.8,
+    "image": "Pomphertwhite.png"
+  }
+]

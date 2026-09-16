@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Fish Information</title>
+<style>
+  /* Same styling as before */
+  body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; }
+  label { margin-top: 15px; display: block; font-weight: bold; }
+  input, select, button { width: 100%; padding: 8px; margin-top: 5px; }
+  .manual-input { display: none; margin-top: 8px; }
+  button { margin-top: 20px; background: #007bff; color: white; border: none; cursor: pointer; }
+  button:hover { background: #0056b3; }
+</style>
+</head>
+<body>
+
+<h2>Fish Information</h2>
+
+<form id="fishForm">
+  <label for="species">Species</label>
+  <select id="species" required>
+    <option value="" disabled selected>Select species</option>
+    <option>Rohu</option>
+    <option>Catla</option>
+    <option>Hilsa</option>
+    <option>Common Carp</option>
+    <option>Mrigal</option>
+    <option>Bombay Duck</option>
+    <option>Pomfret</option>
+    <option>Indian Mackerel</option>
+    <option>Kingfish</option>
+    <option>Seer Fish</option>
+    <option>Barramundi</option>
+    <option>Tilapia</option>
+    <option>Catfish</option>
+    <option>Singhi</option>
+    <option>Pangasius</option>
+    <option>Snakehead</option>
+    <option>Major Carp</option>
+    <option>Air Potato</option>
+    <option>Gourami</option>
+    <option>Indian Salmon</option>
+    <option>Eel</option>
+    <option>Climbing Perch</option>
+    <option>Khola</option>
+    <option>Tilapia Nilotica</option>
+    <option>Orange Chromide</option>
+    <option>Chocolate Mahseer</option>
+    <option>Golden Mahseer</option>
+    <option>Rainbow Trout</option>
+    <option>Snow Trout</option>
+    <option>Sand Dab</option>
+    <option>Labeo Calbasu</option>
+    <option>Mrigal Carp</option>
+    <option>Gibel Carp</option>
+    <option>Silver Carp</option>
+    <option>Grass Carp</option>
+    <option>Other</option>
+  </select>
+  <input type="text" id="manualSpecies" class="manual-input" placeholder="Enter species manually" />
+
+  <label for="size">Size/Weight (kg)</label>
+  <input type="number" id="size" step="0.01" min="0" required placeholder="Enter size or weight" />
+
+  <label for="location">Location</label>
+  <select id="location" required>
+    <option value="" disabled selected>Select location</option>
+    <option>Gateway of India, Mumbai</option>
+    <option>Versova Beach, Mumbai</option>
+    <option>Madh Island, Mumbai</option>
+    <option>Manori Beach, Mumbai</option>
+    <option>Marve Beach, Mumbai</option>
+    <option>Gorai Beach, Mumbai</option>
+    <option>Aksa Beach, Mumbai</option>
+    <option>Elephanta Island, Mumbai</option>
+    <option>Uran Coastal Area, Navi Mumbai</option>
+    <option>Arnala Beach, Virar</option>
+    <option>Alibaug Coastal Region</option>
+    <option>Vasai Creek, Mumbai</option>
+    <option>Thane Creek, Mumbai</option>
+    <option>Juhu Beach, Mumbai</option>
+    <option>Marine Drive, Mumbai</option>
+    <option>Tirthan Valley, Himachal Pradesh</option>
+    <option>Kameng River, Arunachal Pradesh</option>
+    <option>Coorg River, Karnataka</option>
+    <option>Netravati River, Karnataka</option>
+    <option>Arabian Sea Coast, Kerala</option>
+    <option>Kerala Backwaters</option>
+    <option>Ranikor, Meghalaya</option>
+    <option>Jim Corbett National Park, Uttarakhand</option>
+    <option>Andaman & Nicobar Islands</option>
+    <option>Sangla Valley, Himachal Pradesh</option>
+    <option>Konkan Coast, Maharashtra</option>
+    <option>Narmada River, Madhya Pradesh</option>
+    <option>Chilika Lake, Odisha</option>
+    <option>Bhitarkanika Mangroves, Odisha</option>
+    <option>Loktak Lake, Manipur</option>
+    <option>Dal Lake, Kashmir</option>
+    <option>Wular Lake, Kashmir</option>
+    <option>Satpura National Park, Madhya Pradesh</option>
+    <option>Suheli River, Chhattisgarh</option>
+    <option>Bhadra River, Karnataka</option>
+    <option>Cauvery River, Karnataka/Tamil Nadu</option>
+    <option>Godavari River, Maharashtra/Andhra Pradesh</option>
+    <option>Krishna River, Maharashtra/Telangana</option>
+    <option>Tapi River, Maharashtra/Gujarat</option>
+    <option>Mahi River, Rajasthan/Gujarat</option>
+    <option>Sutlej River, Punjab</option>
+    <option>Beas River, Himachal Pradesh/Punjab</option>
+    <option>Yamuna River, Delhi/UP</option>
+    <option>Ganga River, Uttar Pradesh/Bihar</option>
+    <option>Brahmaputra River, Assam</option>
+    <option>Sundarbans Mangrove Forest, West Bengal</option>
+    <option>Havelock Island, Andaman Islands</option>
+    <option>Lakshadweep Islands</option>
+    <option>Gulf of Mannar, Tamil Nadu</option>
+    <option>Velas Beach, Maharashtra</option>
+    <option>Other</option>
+  </select>
+  <input type="text" id="manualLocation" class="manual-input" placeholder="Enter location manually" />
+
+  <label for="photo">Photo (optional)</label>
+  <input type="file" id="photo" accept="image/*"/>
+
+  <button type="submit">Save & Continue</button>
+</form>
+
+<script>
+  const speciesSelect = document.getElementById('species');
+  const manualSpecies = document.getElementById('manualSpecies');
+  const locationSelect = document.getElementById('location');
+  const manualLocation = document.getElementById('manualLocation');
+
+  speciesSelect.addEventListener('change', () => {
+    if (speciesSelect.value === 'Other') {
+      manualSpecies.style.display = 'block';
+      manualSpecies.required = true;
+    } else {
+      manualSpecies.style.display = 'none';
+      manualSpecies.required = false;
+      manualSpecies.value = '';
+    }
+  });
+
+  locationSelect.addEventListener('change', () => {
+    if (locationSelect.value === 'Other') {
+      manualLocation.style.display = 'block';
+      manualLocation.required = true;
+    } else {
+      manualLocation.style.display = 'none';
+      manualLocation.required = false;
+      manualLocation.value = '';
+    }
+  });
+
+  const fishForm = document.getElementById('fishForm');
+  fishForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    let species = speciesSelect.value === 'Other' ? manualSpecies.value.trim() : speciesSelect.value;
+    let location = locationSelect.value === 'Other' ? manualLocation.value.trim() : locationSelect.value;
+    let size = parseFloat(document.getElementById('size').value).toFixed(2);
+
+    if (!species || !location) {
+      alert('Please enter species and location');
+      return;
+    }
+
+    let photo = '';
+    const photoFile = document.getElementById('photo').files[0];
+    if (photoFile) {
+      photo = await new Promise(resolve => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.readAsDataURL(photoFile);
+      });
+    }
+
+    const fishData = { species, location, size, photo, date: new Date().toISOString() };
+    localStorage.setItem('fishData', JSON.stringify(fishData));
+
+    window.location.href = 'share.html';
+  });
+
+  // Prefill form if data exists
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedFish = JSON.parse(localStorage.getItem('fishData'));
+    if (savedFish) {
+      if ([...speciesSelect.options].some(o => o.value === savedFish.species)) {
+        speciesSelect.value = savedFish.species;
+      } else {
+        speciesSelect.value = 'Other';
+        manualSpecies.value = savedFish.species;
+        manualSpecies.style.display = 'block';
+      }
+      if ([...locationSelect.options].some(o => o.value === savedFish.location)) {
+        locationSelect.value = savedFish.location;
+      } else {
+        locationSelect.value = 'Other';
+        manualLocation.value = savedFish.location;
+        manualLocation.style.display = 'block';
+      }
+      document.getElementById('size').value = savedFish.size;
+      // photo not preloaded for security reasons
+    }
+  });
+</script>
+
+</body>
+</html>

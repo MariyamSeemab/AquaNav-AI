@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AquaNav AI - Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+  />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: #171b24;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      overflow-x: hidden;
+    }
+
+    /* ---------- Sea Background ---------- */
+    .sea-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(to top, #1e90ff 70%, #87cefa);
+      overflow: hidden;
+      z-index: -2;
+    }
+    .wave-layer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 200%;
+  height: 200px; /* increased from 120px → bigger waves */
+  background: url('https://freepngimg.com/save/110541-white-wave-free-hq-image/1280x640') repeat-x;
+  background-size: 900px 180px; /* bigger wave pattern */
+  animation: sea-wave 3s linear infinite;
+  opacity: 0.6;
+}
+.wave-layer:nth-child(2) {
+  animation-duration: 12s; /* slower second layer for depth */
+  opacity: 0.4;
+}
+
+    .wave-layer:nth-child(2) {
+      animation-duration: 10s;
+      opacity: 0.4;
+    }
+    @keyframes sea-wave {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .boat {
+      position: absolute;
+      width: 220px;
+      bottom: 110px;
+      left: -260px;
+      animation: sail 30s linear infinite;
+      z-index: 1;
+    }
+    @keyframes sail {
+      0%   { left: -260px; transform: translateY(0) rotate(-1deg); }
+      25%  { transform: translateY(-10px) rotate(2deg); }
+      50%  { transform: translateY(0) rotate(-1deg); }
+      75%  { transform: translateY(-8px) rotate(1deg); }
+      100% { left: 110%; transform: translateY(0) rotate(-1deg); }
+    }
+
+    .fish {
+      position: absolute;
+      width: 80px;
+      animation: jump 4s ease-in-out infinite;
+      z-index: 3;
+    }
+    .fish1 { left: 20%; bottom: 80px; animation-delay: 0s; }
+    .fish2 { left: 50%; bottom: 90px; animation-delay: 1s; }
+    .fish3 { left: 75%; bottom: 70px; animation-delay: 2s; }
+
+    @keyframes jump {
+  0%   { transform: translateY(0) rotate(0deg); opacity: 0; }   /* hidden inside wave */
+  10%  { opacity: 1; }   /* start visible while going up */
+  40%  { transform: translateY(-120px) rotate(20deg); opacity: 1; } /* peak jump */
+  60%  { transform: translateY(-60px) rotate(-15deg); opacity: 1; } /* falling down */
+  90%  { opacity: 0; }   /* almost back inside wave, hide */
+  100% { transform: translateY(0) rotate(0deg); opacity: 0; }   /* hidden inside wave */
+}
+    /* ---------- Helpline Bar ---------- */
+    .helpline-bar {
+      position: sticky;
+      top: 10px;
+      background: linear-gradient(90deg, #077d00, #128371);
+      color: #fff;
+      font-weight: 600;
+      font-size: 1em;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      z-index: 1000;
+      width: 95%;
+      max-width: 990px;
+      margin: 0 auto 20px auto;
+      padding-left: 12px;
+      border-radius: 8px;
+    }
+    .marquee-content {
+      display: inline-block;
+      white-space: nowrap;
+      will-change: transform;
+      animation: marquee 20s linear infinite;
+      user-select: none;
+    }
+    @keyframes marquee {
+      0%   { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+    .helpline-bar .fa-phone { margin: 0 8px 0 6px; color: #ffdf00; }
+
+    /* ---------- Header ---------- */
+    .header {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 18px;
+      width: 100%;
+      max-width: 990px;
+      z-index: 2;
+    }
+    .logo { width: 44px; border-radius: 10px; }
+    .title { font-size: 1.4em; font-weight: bold; color: #077d00; }
+
+    /* ---------- Buttons ---------- */
+    .dashboard-grid {
+      width: 100%;
+      max-width: 990px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px 30px;
+      padding: 0 14px;
+      z-index: 2;
+      margin-bottom: 50px;
+    }
+    a.button-wave {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1.1em;
+      text-align: center;
+      letter-spacing: 2px;
+      color: #128371;
+      padding: 22px 8px;
+      border-radius: 26px;
+      border: 2px solid #128371;
+      cursor: pointer;
+      overflow: hidden;
+      user-select: none;
+      transition: color 0.3s ease;
+      min-height: 68px;
+      min-width: 150px;
+      background: #fff;
+      text-decoration: none;
+    }
+    a.button-wave span { position: relative; z-index: 2; transition: color 0.8s ease; pointer-events: none; }
+    a.button-wave:hover span { color: #fff; }
+    a.button-wave .wave {
+      position: absolute;
+      left: 0;
+      top: calc(100% + 22px);
+      width: 100%;
+      height: 100%;
+      background-color: #4fabe0;
+      transition: top 0.8s ease;
+      border-radius: 26px;
+      z-index: 1;
+    }
+    a.button-wave .wave::before {
+      content: '';
+      position: absolute;
+      top: -22px;
+      left: 0;
+      width: 100%;
+      height: 22px;
+      background-image: url('https://static.vecteezy.com/system/resources/thumbnails/036/031/143/small/bright-blue-waves-on-grey-background-with-dots-png.png');
+      background-size: contain;
+      background-repeat: repeat-x;
+      animation: wave 1s linear infinite;
+    }
+    a.button-wave:hover .wave { top: 0; }
+
+    @keyframes wave { to { background-position-x: 118px; } }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 920px) { .dashboard-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px) { .dashboard-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+  <!-- Sea Background -->
+  <div class="sea-bg">
+    <img src="https://png.pngtree.com/png-vector/20250724/ourmid/pngtree-blue-and-red-hand-drawn-style-cruise-ship-ocean-fishing-boat-png-image_16813173.webp" alt="Boat" class="boat" />
+    <img src="https://png.pngtree.com/png-vector/20241009/ourmid/pngtree-ilish-fish-vector-png-image_14031528.png" class="fish fish1" alt="Fish" />
+    <img src="https://png.pngtree.com/png-vector/20241009/ourmid/pngtree-ilish-fish-vector-png-image_14031528.png" class="fish fish2" alt="Fish" />
+    <img src="https://png.pngtree.com/png-vector/20241009/ourmid/pngtree-ilish-fish-vector-png-image_14031528.png" class="fish fish3" alt="Fish" />
+    <div class="wave-layer"></div>
+    <div class="wave-layer"></div>
+    <div class="wave-layer"></div>
+    <div class="wave-layer"></div>
+    <div class="wave-layer"></div> <!-- new big wave -->
+
+  </div>
+
+  <!-- Helpline Bar -->
+  <div class="helpline-bar">
+    <span class="marquee-content">
+      <i class="fa fa-phone"></i> Emergency Helpline: Dial 112 | Traffic: 7738393839 | Coastal: 1093 | Cyber: 1930 | Women: 103 | Senior Citizen: 1090
+    </span>
+  </div>
+
+  <!-- Header -->
+  <div class="header">
+    <img src="https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/c1dfc272-e249-45b8-9d22-8c1411a5e496.png" alt="Logo" class="logo" />
+    <div class="title">AquaNav AI Dashboard</div>
+  </div>
+
+  <!-- Dashboard Buttons -->
+  <div class="dashboard-grid">
+    <a href="fishdashboard.html" class="button-wave"><span>Fish</span><div class="wave"></div></a>
+    <a href="ind.html" class="button-wave"><span>Plan Route</span><div class="wave"></div></a>
+    <a href="#" class="button-wave"><span>Location</span><div class="wave"></div></a>
+    <a href="sea_forecast.html" class="button-wave"><span>Forecast</span><div class="wave"></div></a>
+    <a href="x.html" class="button-wave"><span>Fish Recommendation</span><div class="wave"></div></a>
+    <a href="dos.html" class="button-wave"><span>Dos / Don'ts</span><div class="wave"></div></a>
+    <a href="safetytips.html" class="button-wave"><span>Safety Tips</span><div class="wave"></div></a>
+    <a href="fishingscheme.html" class="button-wave"><span>Fishing Schemes</span><div class="wave"></div></a>
+    <a href="fishencyclopedia.html" class="button-wave"><span>Fish Encyclopedia</span><div class="wave"></div></a>
+    <a href="tides.html" class="button-wave"><span>Tides</span><div class="wave"></div></a>
+    <a href="fisherman_alert.html" class="button-wave"><span>Disaster Alert</span><div class="wave"></div></a>
+    <a href="https://navimumbaipolice.gov.in/contact" target="_blank" class="button-wave"><span>Coastal Security</span><div class="wave"></div></a>
+  </div>
+
+</body>
+</html>

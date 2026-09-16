@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Animated Seaside Scene</title>
+  <style>
+    body{
+      width: 100%;
+      display: block;
+      min-height: 100vh;
+      background-color: #0bd0ea;
+    }
+    .section-center{
+      position: relative;
+      width: 600px;
+      height: 450px;
+      display: block;
+      z-index: 6;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+    .section-up{
+      position: absolute;
+      width: 100%;
+      height: 270px;
+      left: 0;
+      top: 0;
+      display: block;
+      z-index: 5;
+    }
+    /* --- Hills, Trees, Buildings, Birds, Sun, Clouds --- */
+    /* (your hill, tree, building, bird, sun, and cloud styles pasted from above – unchanged) */
+    /* ---------------------------------------------- */
+
+    .section-down{
+      position: absolute;
+      width: 100%;
+      height: 180px;
+      left: 0;
+      top: 270px;
+      display: block;
+      z-index: 6;
+      border-top: 2px solid #030308;
+      background-color: #0bd0ea;
+    }
+
+    /* --- Water animation --- */
+    .water-wrapper{
+      position: absolute;
+      left: 65px;
+      bottom: 0;
+      height: 70px;
+      width: 77px;
+      display: block;
+      z-index: 6;
+      overflow: hidden;
+    }
+    .water-wrapper.right{
+      left: 450px;
+      bottom: -20px;
+    }
+    .water-wrapper.top.right{
+      left: 454.5px;
+      bottom: -10px;
+    }
+    .water-wrap{
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 70px;
+      width: 231px;
+      display: block;
+      z-index: 6;
+      transform: translateX(0);  
+      animation: moveWater 1.6s linear infinite;
+    }
+    @keyframes moveWater {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-33.333%); }
+    }
+    .water{
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 70px;
+      width: 77px;
+      display: block;
+      z-index: 6;
+      background-color: #0bd0ea;
+    }
+    .water.snd{ left: 77px; }
+    .water.trd{ left: 154px; }
+    .water span{
+      position: absolute;
+      left: -4px;
+      top: 12px;
+      height: 20px;
+      width: 20px;
+      border-radius: 50%;
+      border: 2px solid #030308;
+      border-color: #030308 transparent transparent transparent;
+    }
+    .water span:nth-child(2){ left: 9px; top: -1px; border-color: transparent transparent #030308 transparent; }
+    .water span:nth-child(3){ left: 22px; }
+    .water span:nth-child(4){ left: 35px; top: -1px; border-color: transparent transparent #030308 transparent; }
+    .water span:nth-child(5){ left: 48px; }
+    .water span:nth-child(6){ left: 61px; top: -1px; border-color: transparent transparent #030308 transparent; }
+
+    /* --- Foreground water (waves on top) --- */
+    .water-wrapper.top{
+      width: 68px;
+      left: 69.5px;
+      bottom: 10px;
+      z-index: 7;
+    }
+    .water-wrapper.top .water-wrap{ width: 204px; }
+    .water-wrapper.top .water{
+      height: 70px;
+      width: 68px;
+      background-color: transparent;
+    }
+    .water-wrapper.top .water.snd{ left: 68px; }
+    .water-wrapper.top .water.trd{ left: 136px; }
+    .water-wrapper.top .water span{
+      left: -3px;
+      top: 12px;
+      height: 18px;
+      width: 18px;
+      border-radius: 50%;
+      border: 2px solid #030308;
+      border-color: #030308 transparent transparent transparent;
+    }
+    .water-wrapper.top .water span:nth-child(2){ left: 8px; top: 0; border-color: transparent transparent #030308 transparent; }
+    .water-wrapper.top .water span:nth-child(3){ left: 18px; }
+    .water-wrapper.top .water span:nth-child(4){ left: 28px; top: 0; border-color: transparent transparent #030308 transparent; }
+    .water-wrapper.top .water span:nth-child(5){ left: 38px; }
+    .water-wrapper.top .water span:nth-child(6){ left: 48px; top: 0; border-color: transparent transparent #030308 transparent; }
+
+    /* Ship, Fish, Extra water-lines etc. */
+    /* (continue same style pattern, copy-paste missing pieces) */
+
+    /* Link to profile */
+    .link-to-portfolio {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
+      font-size: 10px;
+      color: #030308;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="section-center">
+    <!-- your section-up and section-down HTML here (already correct from your paste) -->
+  </div>
+  <a href="https://codepen.io/ig_design/" class="link-to-portfolio cursor-link" target="_blank">by IG Design</a>
+</body>
+</html>

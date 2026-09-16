@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Fisheries Schemes - Interactive</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(to bottom, #69D2E7 0%, #AADAAD 100%);
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+    color: #1E3A5F;
+  }
+  .container {
+    background: rgba(246, 248, 252, 0.85);
+    border-radius: 24px;
+    padding: 40px;
+    max-width: 1000px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    width: 100%;
+  }
+  h1 {
+    text-align: center;
+    font-size: 2.8rem;
+    margin-bottom: 40px;
+    color: #218C8D;
+    font-weight: 700;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th, td {
+    border-bottom: 1px solid #c6d8db;
+    padding: 15px 10px;
+    text-align: left;
+    vertical-align: top;
+    word-wrap: break-word;
+  }
+  th {
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+    color: #146C6C;
+    font-weight: 700;
+  }
+  th .arrow {
+    margin-left: 6px;
+    font-size: 0.9rem;
+  }
+  .apply-link {
+    background-color: #218C8D;
+    color: white;
+    text-decoration: none;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-weight: 600;
+    box-shadow: 0 6px 15px rgba(33, 140, 141, 0.6);
+    transition: background-color 0.3s ease;
+    display: inline-block;
+  }
+  .apply-link:hover {
+    background-color: #176767;
+  }
+  button.details-toggle {
+    background: none;
+    border: none;
+    color: #218C8D;
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: underline;
+    padding: 0;
+    font-size: 1rem;
+  }
+  tr.details-row {
+    display: none;
+    background-color: #f7fafb;
+  }
+  td.details-cell {
+    padding: 15px 20px;
+    color: #555;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Fisheries Welfare Schemes</h1>
+  <table id="schemesTable" aria-label="List of fisheries welfare schemes">
+    <thead>
+      <tr>
+        <th data-col="name" scope="col" tabindex="0" aria-sort="none">Scheme Name <span class="arrow"></span></th>
+        <th data-col="who" scope="col" tabindex="0" aria-sort="none">Who is it for <span class="arrow"></span></th>
+        <th data-col="eligibility" scope="col" tabindex="0" aria-sort="none">Eligibility <span class="arrow"></span></th>
+        <th scope="col">Benefits</th>
+        <th scope="col">Documents</th>
+        <th scope="col">Apply</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Row for Scheme 1 -->
+      <tr>
+        <td>Pradhan Mantri Matsya Sampada Yojana (PMMSY)</td>
+        <td>Fishers, fish farmers, MSMEs, cooperatives, women, SC/ST beneficiaries</td>
+        <td>Registered fishers/fish farmers with valid documents</td>
+        <td>Subsidies (up to 60%), infrastructure, market linkages, safety kits, training</td>
+        <td><button class="details-toggle" aria-expanded="false" aria-controls="doc1">View Documents</button></td>
+        <td><a href="https://pmmsy.dof.gov.in/" target="_blank" rel="noopener" class="apply-link">Apply</a></td>
+      </tr>
+      <tr id="doc1" class="details-row" aria-hidden="true">
+        <td colspan="6" class="details-cell">
+          Fisheries registration certificate, caste certificate (for SC/ST/Women), project proposal (if applicable), identity and address proof.
+        </td>
+      </tr>
+
+      <!-- Row for Scheme 2 -->
+      <tr>
+        <td>National Scheme For Welfare of Fishermen (NSWF)</td>
+        <td>Small and marginal fishers families</td>
+        <td>Registered small-scale fisherfolk</td>
+        <td>Financial aid for housing, sanitation, education, community development</td>
+        <td><button class="details-toggle" aria-expanded="false" aria-controls="doc2">View Documents</button></td>
+        <td><a href="https://www.myscheme.gov.in/schemes/nswf" target="_blank" rel="noopener" class="apply-link">Apply</a></td>
+      </tr>
+      <tr id="doc2" class="details-row" aria-hidden="true">
+        <td colspan="6" class="details-cell">
+          Identity proof, fisher card registration, proof of residence.
+        </td>
+      </tr>
+
+      <!-- Row for Scheme 3 -->
+      <tr>
+        <td>Kisan Credit Card (KCC) for Fishers</td>
+        <td>Registered traditional fishers and fish farmers</td>
+        <td>Valid fisher registration/license</td>
+        <td>Loans up to ₹5 lakh for fishing and allied activities at lower interest rates</td>
+        <td><button class="details-toggle" aria-expanded="false" aria-controls="doc3">View Documents</button></td>
+        <td><a href="https://www.angelone.in/news/market-updates/financial-assistance-for-4-6-lakh-fishers-and-fish-farmers-in-india-key-government-schemes" target="_blank" rel="noopener" class="apply-link">Apply</a></td>
+      </tr>
+      <tr id="doc3" class="details-row" aria-hidden="true">
+        <td colspan="6" class="details-cell">
+          Proof of fishing activity, identity proof, address proof, fishing license/registration.
+        </td>
+      </tr>
+      
+      <!-- Row for Scheme 4 -->
+      <tr>
+        <td>Fisheries Infrastructure Development Fund (FIDF)</td>
+        <td>State agencies, cooperatives, entrepreneurs</td>
+        <td>Fisheries-related entities with capital projects</td>
+        <td>Loans and subsidies for harbor, cold storage, processing infrastructure</td>
+        <td><button class="details-toggle" aria-expanded="false" aria-controls="doc4">View Documents</button></td>
+        <td><a href="https://www.fidf.in/" target="_blank" rel="noopener" class="apply-link">Apply</a></td>
+      </tr>
+      <tr id="doc4" class="details-row" aria-hidden="true">
+        <td colspan="6" class="details-cell">
+          Project proposal, approvals from fisheries department, financial documents of entity.
+        </td>
+      </tr>
+
+      <!-- Row for Scheme 5 -->
+      <tr>
+        <td>Marine Fishermen Assistance Program</td>
+        <td>Registered marine fishermen</td>
+        <td>Marine fisher registration</td>
+        <td>Capital subsidies, savings schemes during lean seasons</td>
+        <td><button class="details-toggle" aria-expanded="false" aria-controls="doc5">View Documents</button></td>
+        <td>Contact local fisheries or maritime boards</td>
+      </tr>
+      <tr id="doc5" class="details-row" aria-hidden="true">
+        <td colspan="6" class="details-cell">
+          Coastal fisher ID proof, registration certificates.
+        </td>
+      </tr>
+
+      <!-- Row for Scheme 6 -->
+      <tr>
+        <td>Skill Development & Training Programs (NFDB)</td>
+        <td>Any fisher or youth linked to fisheries</td>
+        <td>Registration with fisheries department or NFDB programs</td>
+        <td>Training courses, certificates, exposure visits</td>
+        <td><button class="details-toggle" aria-expanded="false" aria-controls="doc6">View Documents</button></td>
+        <td><a href="https://dof.gov.in/" target="_blank" rel="noopener" class="apply-link">Apply</a></td>
+      </tr>
+      <tr id="doc6" class="details-row" aria-hidden="true">
+        <td colspan="6" class="details-cell">
+          Registration documents for training, ID proof.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+  // Sorting logic from before
+  const table = document.getElementById('schemesTable');
+  let sortDirection = {name: true, who: true, eligibility: true};
+  function updateArrows(th, direction) {
+    th.querySelectorAll('.arrow').forEach(a => a.textContent = '');
+    if (direction === true) {
+      th.querySelector('.arrow').textContent = '▲';
+      th.setAttribute('aria-sort', 'ascending');
+    } else {
+      th.querySelector('.arrow').textContent = '▼';
+      th.setAttribute('aria-sort', 'descending');
+    }
+  }
+  function sortTable(colName) {
+    const tbody = table.tBodies[0];
+    const rows = Array.from(tbody.rows).filter(r => !r.classList.contains('details-row'));
+    const ths = table.tHead.rows[0].cells;
+    const colIndex = Array.from(ths).findIndex(cell => cell.dataset.col === colName);
+    const direction = sortDirection[colName];
+    rows.sort((a, b) => {
+      const aText = a.cells[colIndex].textContent.trim().toLowerCase();
+      const bText = b.cells[colIndex].textContent.trim().toLowerCase();
+      return (aText < bText ? -1 : 1) * (direction ? 1 : -1);
+    });
+    rows.forEach(row => tbody.appendChild(row));
+    // Also append relevant detail rows immediately after sorted row
+    rows.forEach(row => {
+      const docRow = tbody.querySelector(`#doc${row.rowIndex}`);
+      if(docRow) tbody.appendChild(docRow);
+    });
+    Array.from(ths).forEach(cell => {
+      if (cell.dataset.col) {
+        if (cell.dataset.col === colName) {
+          updateArrows(cell, direction);
+        } else {
+          cell.querySelectorAll('.arrow').forEach(a => a.textContent = '');
+          cell.setAttribute('aria-sort', 'none');
+        }
+      }
+    });
+    sortDirection[colName] = !direction;
+  }
+  document.querySelectorAll('th[data-col]').forEach(th => {
+    th.addEventListener('click', () => sortTable(th.dataset.col));
+    th.addEventListener('keydown', e => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        sortTable(th.dataset.col);
+      }
+    });
+  });
+
+  // Document toggle expansion logic
+  document.querySelectorAll('.details-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetId = btn.getAttribute('aria-controls');
+      const detailRow = document.getElementById(targetId);
+      if(detailRow.style.display === 'table-row') {
+        detailRow.style.display = 'none';
+        btn.setAttribute('aria-expanded', 'false');
+        detailRow.setAttribute('aria-hidden', 'true');
+      } else {
+        detailRow.style.display = 'table-row';
+        btn.setAttribute('aria-expanded', 'true');
+        detailRow.setAttribute('aria-hidden', 'false');
+      }
+    });
+  });
+</script>
+</body>
+</html>

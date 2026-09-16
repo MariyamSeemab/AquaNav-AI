@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Fishing Community Feed</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    background: #f0f2f5;
+    color: #333;
+  }
+  h2, h3 {
+    text-align: center;
+    color: #2c3e50;
+  }
+  form > * {
+    display: block;
+    margin-bottom: 12px;
+    width: 100%;
+  }
+  select, input, button, textarea {
+    padding: 12px;
+    box-sizing: border-box;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1em;
+    transition: border-color 0.3s;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0,123,255,0.5);
+  }
+  button {
+    width: auto;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 12px 24px;
+    transition: background-color 0.3s, transform 0.2s;
+  }
+  button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+  }
+  .post {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    position: relative;
+    transition: box-shadow 0.3s ease;
+  }
+  .post:hover {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  }
+  .post img {
+    max-width: 100%;
+    height: auto;
+    margin-top: 12px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  .post-meta {
+    font-size: 0.85em;
+    color: #777;
+    margin-top: 6px;
+  }
+  .post-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #007bff 0%, #6610f2 100%);
+    color: white;
+    font-weight: 700;
+    font-size: 1.4em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+  .post-header div {
+    font-weight: 600;
+    font-size: 1.1em;
+  }
+  .location-small {
+    font-weight: 400;
+    font-size: 0.9em;
+    color: #555;
+  }
+  .post-actions {
+    margin-top: 16px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+  .btn-share {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #25d366;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+    font-size: 0.95em;
+    user-select: none;
+    box-shadow: 0 4px 8px rgba(37, 211, 102, 0.4);
+    transition: background 0.3s ease, transform 0.2s ease;
+  }
+  .btn-share.facebook {
+    background: #1877f2;
+    box-shadow: 0 4px 8px rgba(24, 119, 242, 0.4);
+  }
+  .btn-share:hover {
+    filter: brightness(1.1);
+    transform: translateY(-3px);
+  }
+  .btn-share svg {
+    width: 20px;
+    height: 20px;
+    fill: white;
+  }
+  .btn-delete {
+    background-color: #dc3545;
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.4);
+  }
+  .btn-delete:hover {
+    filter: brightness(1.1);
+    transform: translateY(-3px);
+  }
+  .manual-input {
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<h2>Community Catch Feed</h2>
+
+<form id="postForm">
+  <label for="species">Species:</label>
+  <select id="species" required>
+    <option value="" disabled selected>Select fish species</option>
+    <option value="Rohu">Rohu</option>
+    <option value="Catla">Catla</option>
+    <option value="Hilsa">Hilsa</option>
+    <option value="Common Carp">Common Carp</option>
+    <option value="Mrigal">Mrigal</option>
+    <option value="Bombay Duck">Bombay Duck</option>
+    <option value="Pomfret">Pomfret</option>
+    <option value="Indian Mackerel">Indian Mackerel</option>
+    <option value="Kingfish">Kingfish</option>
+    <option value="Seer Fish">Seer Fish</option>
+    <option value="Barramundi">Barramundi</option>
+    <option value="Tilapia">Tilapia</option>
+    <option value="Catfish">Catfish</option>
+    <option value="Singhi">Singhi (Gangetic Catfish)</option>
+    <option value="Pangasius">Pangasius</option>
+    <option value="Snakehead">Snakehead</option>
+    <option value="Major Carp">Major Carp</option>
+    <option value="Air Potato">Air Potato</option>
+    <option value="Gourami">Gourami</option>
+    <option value="Indian Salmon">Indian Salmon</option>
+    <option value="Eel">Eel</option>
+    <option value="Climbing Perch">Climbing Perch</option>
+    <option value="Khola">Khola</option>
+    <option value="Tilapia Nilotica">Tilapia Nilotica</option>
+    <option value="Orange Chromide">Orange Chromide</option>
+    <option value="Chocolate Mahseer">Chocolate Mahseer</option>
+    <option value="Golden Mahseer">Golden Mahseer</option>
+    <option value="Rainbow Trout">Rainbow Trout</option>
+    <option value="Snow Trout">Snow Trout</option>
+    <option value="Sand Dab">Sand Dab</option>
+    <option value="Labeo Calbasu">Labeo Calbasu</option>
+    <option value="Mrigal Carp">Mrigal Carp</option>
+    <option value="Gibel Carp">Gibel Carp</option>
+    <option value="Silver Carp">Silver Carp</option>
+    <option value="Grass Carp">Grass Carp</option>
+    <option value="Other">Other (Enter manually below)</option>
+  </select>
+  <input type="text" id="manualSpecies" class="manual-input" placeholder="Enter fish species manually" />
+
+  <label for="size">Size/Weight (kg):</label>
+  <input type="number" id="size" step="0.01" min="0" required placeholder="Size or weight" />
+
+  <label for="location">Location:</label>
+  <select id="location" required>
+    <option value="" disabled selected>Select fishing location</option>
+    <option value="Gateway of India, Mumbai">Gateway of India, Mumbai</option>
+    <option value="Versova Beach, Mumbai">Versova Beach, Mumbai</option>
+    <option value="Madh Island, Mumbai">Madh Island, Mumbai</option>
+    <option value="Manori Beach, Mumbai">Manori Beach, Mumbai</option>
+    <option value="Marve Beach, Mumbai">Marve Beach, Mumbai</option>
+    <option value="Gorai Beach, Mumbai">Gorai Beach, Mumbai</option>
+    <option value="Aksa Beach, Mumbai">Aksa Beach, Mumbai</option>
+    <option value="Elephanta Island, Mumbai">Elephanta Island, Mumbai</option>
+    <option value="Uran Coastal Area, Navi Mumbai">Uran Coastal Area, Navi Mumbai</option>
+    <option value="Arnala Beach, Virar">Arnala Beach, Virar</option>
+    <option value="Alibaug Coastal Region">Alibaug Coastal Region</option>
+    <option value="Vasai Creek, Mumbai">Vasai Creek, Mumbai</option>
+    <option value="Thane Creek, Mumbai">Thane Creek, Mumbai</option>
+    <option value="Juhu Beach, Mumbai">Juhu Beach, Mumbai</option>
+    <option value="Marine Drive, Mumbai">Marine Drive, Mumbai</option>
+    <option value="Tirthan Valley, Himachal Pradesh">Tirthan Valley, Himachal Pradesh</option>
+    <option value="Kameng River, Arunachal Pradesh">Kameng River, Arunachal Pradesh</option>
+    <option value="Coorg River, Karnataka">Coorg River, Karnataka</option>
+    <option value="Netravati River, Karnataka">Netravati River, Karnataka</option>
+    <option value="Arabian Sea Coast, Kerala">Arabian Sea Coast, Kerala</option>
+    <option value="Kerala Backwaters">Kerala Backwaters</option>
+    <option value="Ranikor, Meghalaya">Ranikor, Meghalaya</option>
+    <option value="Jim Corbett National Park, Uttarakhand">Jim Corbett National Park, Uttarakhand</option>
+    <option value="Andaman & Nicobar Islands">Andaman & Nicobar Islands</option>
+    <option value="Sangla Valley, Himachal Pradesh">Sangla Valley, Himachal Pradesh</option>
+    <option value="Konkan Coast, Maharashtra">Konkan Coast, Maharashtra</option>
+    <option value="Narmada River, Madhya Pradesh">Narmada River, Madhya Pradesh</option>
+    <option value="Chilika Lake, Odisha">Chilika Lake, Odisha</option>
+    <option value="Bhitarkanika Mangroves, Odisha">Bhitarkanika Mangroves, Odisha</option>
+    <option value="Loktak Lake, Manipur">Loktak Lake, Manipur</option>
+    <option value="Dal Lake, Kashmir">Dal Lake, Kashmir</option>
+    <option value="Wular Lake, Kashmir">Wular Lake, Kashmir</option>
+    <option value="Satpura National Park, Madhya Pradesh">Satpura National Park, Madhya Pradesh</option>
+    <option value="Suheli River, Chhattisgarh">Suheli River, Chhattisgarh</option>
+    <option value="Bhadra River, Karnataka">Bhadra River, Karnataka</option>
+    <option value="Cauvery River, Karnataka/Tamil Nadu">Cauvery River, Karnataka/Tamil Nadu</option>
+    <option value="Godavari River, Maharashtra/Andhra Pradesh">Godavari River, Maharashtra/Andhra Pradesh</option>
+    <option value="Krishna River, Maharashtra/Telangana">Krishna River, Maharashtra/Telangana</option>
+    <option value="Tapi River, Maharashtra/Gujarat">Tapi River, Maharashtra/Gujarat</option>
+    <option value="Mahi River, Rajasthan/Gujarat">Mahi River, Rajasthan/Gujarat</option>
+    <option value="Sutlej River, Punjab">Sutlej River, Punjab</option>
+    <option value="Beas River, Himachal Pradesh/Punjab">Beas River, Himachal Pradesh/Punjab</option>
+    <option value="Yamuna River, Delhi/UP">Yamuna River, Delhi/UP</option>
+    <option value="Ganga River, Uttar Pradesh/Bihar">Ganga River, Uttar Pradesh/Bihar</option>
+    <option value="Brahmaputra River, Assam">Brahmaputra River, Assam</option>
+    <option value="Sundarbans Mangrove Forest, West Bengal">Sundarbans Mangrove Forest, West Bengal</option>
+    <option value="Havelock Island, Andaman Islands">Havelock Island, Andaman Islands</option>
+    <option value="Lakshadweep Islands">Lakshadweep Islands</option>
+    <option value="Gulf of Mannar, Tamil Nadu">Gulf of Mannar, Tamil Nadu</option>
+    <option value="Velas Beach, Maharashtra">Velas Beach, Maharashtra</option>
+    <option value="Other">Other (Enter manually below)</option>
+  </select>
+  <input type="text" id="manualLocation" class="manual-input" placeholder="Enter fishing location manually" />
+
+  <label for="photo">Photo (optional):</label>
+  <input type="file" id="photo" accept="image/*" />
+
+  <button type="submit">Share Catch</button>
+</form>
+
+<h3>Catch Posts</h3>
+<div id="postsContainer"></div>
+
+<script>
+  const form = document.getElementById('postForm');
+  const postsContainer = document.getElementById('postsContainer');
+  const speciesSelect = document.getElementById('species');
+  const manualSpeciesInput = document.getElementById('manualSpecies');
+  const locationSelect = document.getElementById('location');
+  const manualLocationInput = document.getElementById('manualLocation');
+
+  speciesSelect.addEventListener('change', () => {
+    if (speciesSelect.value === 'Other') {
+      manualSpeciesInput.style.display = 'block';
+      manualSpeciesInput.required = true;
+    } else {
+      manualSpeciesInput.style.display = 'none';
+      manualSpeciesInput.required = false;
+      manualSpeciesInput.value = '';
+    }
+  });
+
+  locationSelect.addEventListener('change', () => {
+    if (locationSelect.value === 'Other') {
+      manualLocationInput.style.display = 'block';
+      manualLocationInput.required = true;
+    } else {
+      manualLocationInput.style.display = 'none';
+      manualLocationInput.required = false;
+      manualLocationInput.value = '';
+    }
+  });
+
+  let posts = JSON.parse(localStorage.getItem('communityPosts')) || [];
+
+  function timeAgo(date) {
+    const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+    if (seconds < 60) return 'just now';
+    const intervals = {
+      year: 31536000,
+      month: 2592000,
+      day: 86400,
+      hour: 3600,
+      minute: 60
+    };
+    for (const i in intervals) {
+      const interval = Math.floor(seconds / intervals[i]);
+      if (interval > 1) return interval + ' ' + i + 's ago';
+      if (interval === 1) return interval + ' ' + i + ' ago';
+    }
+  }
+
+  function createShareLinks(post) {
+    const text = encodeURIComponent(
+      `I caught a ${post.species}, weighing ${post.size} kg at ${post.location} on ${new Date(post.date).toLocaleDateString()}.`
+    );
+    const url = encodeURIComponent(window.location.href);
+
+    return {
+      whatsapp: `https://api.whatsapp.com/send?text=${text}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${text}`
+    };
+  }
+
+  function deleteEntry(index) {
+    if (confirm("Delete this catch post?")) {
+      posts.splice(index, 1);
+      localStorage.setItem('communityPosts', JSON.stringify(posts));
+      renderPosts();
+    }
+  }
+
+  function renderPosts() {
+    postsContainer.innerHTML = '';
+    posts.slice().reverse().forEach((post, idx) => {
+      const shareLinks = createShareLinks(post);
+      const postDiv = document.createElement('div');
+      postDiv.className = 'post';
+
+      const avatarLetter = post.species.charAt(0).toUpperCase();
+
+      postDiv.innerHTML = `
+        <div class="post-header">
+          <div class="avatar">${avatarLetter}</div>
+          <div>
+            <div>${post.species}</div>
+            <div class="location-small">${post.location}</div>
+          </div>
+        </div>
+        <div class="post-meta">${timeAgo(post.date)}</div>
+        ${post.photo ? `<img src="${post.photo}" alt="Catch photo" />` : ''}
+        <div class="post-actions">
+          <a href="${shareLinks.whatsapp}" target="_blank" class="btn-share whatsapp" title="Share on WhatsApp">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.52 3.48a11.303 11.303 0 00-16 0 10.989 10.989 0 00-3.3 12.989L2 22l5.642-1.474a11.027 11.027 0 0012.459-17.046zm-6.386 13.72c-1.548 0-2.767-.89-4.496-2.436l-.703-.671 1.319-1.25.75.71a7.812 7.812 0 002.746-1.429c.196-.204.353-.38.483-.537a.37.37 0 00-.155-.602 3.94 3.94 0 00-.722-.172 3.78 3.78 0 00-1.59.345 7.45 7.45 0 00-1.699 1.511c-.343.423-.692.83-1.04 1.215a.733.733 0 01-.463.23.178.178 0 01-.162-.097c-.18-.303-.718-1.06-1.003-1.42a3.345 3.345 0 01-.085-3.1 10.016 10.016 0 011.714-2.108 6.678 6.678 0 012.25-1.19 3.72 3.72 0 014.575.691.751.751 0 01-.016.99c-.206.234-.398.484-.595.75a.339.339 0 00-.088.217 5.527 5.527 0 001.006 1.328 3.351 3.351 0 011.943 3.3c-.06.536-.26 1.037-.586 1.488-.442.605-.962 1.02-1.562 1.245a3.918 3.918 0 01-1.988.5z"></path></svg>
+            WhatsApp
+          </a>
+          <a href="${shareLinks.facebook}" target="_blank" class="btn-share facebook" title="Share on Facebook">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22.675 0h-21.35C.595 0 0 .593 0 1.326v21.348C0 23.408.593 24 1.325 24h11.495v-9.294H9.843v-3.622h2.978V8.413c0-2.951 1.79-4.563 4.41-4.563 1.252 0 2.329.093 2.642.135v3.066h-1.813c-1.423 0-1.698.676-1.698 1.668v2.187h3.396l-.443 3.622h-2.953V24h5.787C23.407 24 24 23.408 24 22.674V1.325C24 .593 23.407 0 22.675 0z"/></svg>
+            Facebook
+          </a>
+          <button class="btn-delete" onclick="deleteEntry(${posts.length - 1 - idx})" title="Delete this post">Delete</button>
+        </div>
+      `;
+
+      postsContainer.appendChild(postDiv);
+    });
+  }
+
+  function readPhoto(file) {
+    return new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.readAsDataURL(file);
+    });
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    let speciesValue = speciesSelect.value;
+    if (speciesValue === 'Other') {
+      speciesValue = manualSpeciesInput.value.trim();
+      if (!speciesValue) {
+        alert('Please enter fish species manually.');
+        return;
+      }
+    }
+
+    let locationValue = locationSelect.value;
+    if (locationValue === 'Other') {
+      locationValue = manualLocationInput.value.trim();
+      if (!locationValue) {
+        alert('Please enter location manually.');
+        return;
+      }
+    }
+
+    const sizeValue = parseFloat(form.size.value).toFixed(2);
+    let photo = '';
+
+    if (form.photo.files.length > 0) {
+      photo = await readPhoto(form.photo.files[0]);
+    }
+
+    const newPost = {
+      species: speciesValue,
+      size: sizeValue,
+      location: locationValue,
+      photo,
+      date: new Date().toISOString()
+    };
+
+    posts.push(newPost);
+    localStorage.setItem('communityPosts', JSON.stringify(posts));
+
+    form.reset();
+    manualSpeciesInput.style.display = 'none';
+    manualSpeciesInput.required = false;
+    manualLocationInput.style.display = 'none';
+    manualLocationInput.required = false;
+
+    renderPosts();
+  });
+
+  renderPosts();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Fish Recommender — India</title>
+  <link rel="stylesheet" href="x.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+<body>
+  <header>
+    <h1>🐟 Fish Recommender (India)</h1>
+  </header>
+
+  <section class="controls">
+    <div class="row">
+      <input id="locationInput" placeholder="Enter coastal location (e.g., Kerala)" />
+      <select id="seasonSelect">
+        <option value="">Select season</option>
+        <option value="Monsoon">Monsoon</option>
+        <option value="Post-Monsoon">Post-Monsoon</option>
+        <option value="Winter">Winter</option>
+        <option value="Summer">Summer</option>
+      </select>
+      <button id="recommendBtn">Get Recommendation</button>
+      <button id="locBtn">Use My Location</button>
+      <button id="allBtn">Show All Fish</button>
+      <!-- Added button to go to fishh.html -->
+      <button id="fishIndexBtn">Fish Species Index</button>
+    </div>
+  </section>
+
+  <main>
+    <div id="map"></div>
+    <aside id="side">
+      <h2>Results</h2>
+      <div id="results">No results yet.</div>
+    </aside>
+  </main>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="main.js"></script>
+
+  <script>
+    // Button to navigate to fishh.html
+    document.getElementById('fishIndexBtn').addEventListener('click', function() {
+      window.location.href = 'fishh.html';
+    });
+  </script>
+</body>
+</html>

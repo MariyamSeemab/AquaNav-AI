@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Fish Species Detection</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: Arial, sans-serif;
+      color: #171b24;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+      background-color: transparent;
+    }
+
+    /* ---------- Sea Background ---------- */
+    .sea-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(to top, #1e90ff 70%, #87cefa);
+      overflow: hidden;
+      z-index: -2;
+    }
+    .wave-layer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 200%;
+      height: 200px;
+      background: url('https://freepngimg.com/save/110541-white-wave-free-hq-image/1280x640') repeat-x;
+      background-size: 400px 200px;
+      animation: sea-wave 6s linear infinite;
+      opacity: 0.6;
+    }
+    .wave-layer:nth-child(2) {
+      animation-duration: 12s;
+      opacity: 0.4;
+    }
+    @keyframes sea-wave {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .boat {
+      position: absolute;
+      width: 220px;
+      bottom: 110px;
+      left: -260px;
+      animation: sail 30s linear infinite;
+      z-index: 1;
+    }
+    @keyframes sail {
+      0%   { left: -260px; transform: translateY(0) rotate(-1deg); }
+      25%  { transform: translateY(-10px) rotate(2deg); }
+      50%  { transform: translateY(0) rotate(-1deg); }
+      75%  { transform: translateY(-8px) rotate(1deg); }
+      100% { left: 110%; transform: translateY(0) rotate(-1deg); }
+    }
+
+    .fish {
+      position: absolute;
+      width: 80px;
+      animation: jump 4s ease-in-out infinite;
+      z-index: 3;
+    }
+    .fish1 { left: 20%; bottom: 80px; animation-delay: 0s; }
+    .fish2 { left: 50%; bottom: 90px; animation-delay: 1s; }
+    .fish3 { left: 75%; bottom: 70px; animation-delay: 2s; }
+
+    @keyframes jump {
+      0%, 100% { transform: translateY(0) rotate(0deg); opacity: 1; }
+      40% { transform: translateY(-120px) rotate(20deg); opacity: 1; }
+      60% { transform: translateY(-60px) rotate(-15deg); opacity: 0.9; }
+    }
+
+    /* ---------- Helpline Bar ---------- */
+    .helpline-bar {
+      position: sticky;
+      top: 10px;
+      background: linear-gradient(90deg, #077d00, #128371);
+      color: #fff;
+      font-weight: 600;
+      font-size: 1em;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      z-index: 1000;
+      width: 95%;
+      max-width: 990px;
+      margin: 0 auto 20px auto;
+      padding-left: 12px;
+      border-radius: 8px;
+    }
+    .marquee-content {
+      display: inline-block;
+      white-space: nowrap;
+      will-change: transform;
+      animation: marquee 20s linear infinite;
+      user-select: none;
+    }
+    @keyframes marquee {
+      0%   { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+    .helpline-bar .fa-phone { margin: 0 8px 0 6px; color: #ffdf00; }
+
+    .header {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 18px;
+      width: 100%;
+      max-width: 990px;
+      z-index: 2;
+      justify-content: center;
+    }
+    .logo { width: 44px; border-radius: 10px; }
+    .title { font-size: 1.4em; font-weight: bold; color: #077d00; }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      position: relative;
+      z-index: 10;
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    input[type="file"] {
+      display: block;
+      margin: 20px auto;
+    }
+
+    #start-btn, #webcam-btn, #stop-webcam-btn {
+      position: relative;
+      display: block;
+      margin: 10px auto;
+      padding: 12px 24px;
+      background: linear-gradient(145deg, #3498db, #2980b9);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      overflow: hidden;
+      transition: background 0.3s ease, transform 0.2s;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    #start-btn::before, #webcam-btn::before, #stop-webcam-btn::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -75%;
+      width: 250%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.15);
+      transform: skewX(-45deg);
+      transition: left 0.5s ease;
+      z-index: 0;
+    }
+
+    #start-btn:hover::before,
+    #webcam-btn:hover::before,
+    #stop-webcam-btn:hover::before {
+      left: 100%;
+    }
+
+    #start-btn:hover,
+    #webcam-btn:hover,
+    #stop-webcam-btn:hover {
+      transform: scale(1.03);
+    }
+
+    .prediction {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #f4f4f4;
+      border-radius: 5px;
+    }
+
+    .prediction div {
+      margin: 5px 0;
+    }
+
+    .loading {
+      text-align: center;
+      font-size: 18px;
+      color: #3498db;
+    }
+
+    #image-preview {
+      margin: 20px auto;
+      text-align: center;
+    }
+
+    #image-preview img {
+      max-width: 100%;
+      max-height: 300px;
+      margin-top: 20px;
+      border-radius: 8px;
+    }
+
+    #webcam-container {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    #result-message, #price-message {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: bold;
+      color: green;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Elements -->
+  <div class="sea-bg">
+    <!-- <img src="https://png.pngtree.com/png-vector/20250724/ourmid/pngtree-blue-and-red-hand-drawn-style-cruise-ship-ocean-fishing-boat-png-image_16813173.webp" alt="Boat" class="boat" />
+    <img src="https://png.pngtree.com/png-vector/20241009/ourmid/pngtree-ilish-fish-vector-png-image_14031528.png" class="fish fish1" alt="Fish" />
+    <img src="https://png.pngtree.com/png-vector/20241009/ourmid/pngtree-ilish-fish-vector-png-image_14031528.png" class="fish fish2" alt="Fish" />
+    <img src="https://png.pngtree.com/png-vector/20241009/ourmid/pngtree-ilish-fish-vector-png-image_14031528.png" class="fish fish3" alt="Fish" />
+    <div class="wave-layer"></div> -->
+    <div class="wave-layer"></div>
+  </div>
+
+  <!-- Helpline + Header -->
+  <div class="helpline-bar">
+    <span class="marquee-content">
+      <i class="fa fa-phone"></i> Emergency Helpline: Dial 112 | Traffic: 7738393839 | Coastal: 1093 | Cyber: 1930 | Women: 103 | Senior Citizen: 1090
+    </span>
+  </div>
+
+  <div class="header">
+    <img src="https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/c1dfc272-e249-45b8-9d22-8c1411a5e496.png" alt="Logo" class="logo" />
+    <div class="title">AquaNav AI - Fish Species Detection</div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="container">
+    <h2>Fish Species Detection</h2>
+
+    <input type="file" id="file-upload" accept="image/*">
+
+    <div id="image-preview"><p>No image selected</p></div>
+
+    <button id="start-btn">Start Classification</button>
+    <button id="webcam-btn">Start Webcam</button>
+    <button id="stop-webcam-btn" style="display: none;">Stop Webcam</button>
+
+    <div class="loading" id="loading" style="display: none;">Loading model...</div>
+
+    <div id="webcam-container"></div>
+    <div id="label-container"></div>
+
+    <div id="result-message"></div>
+    <div id="price-message"></div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+
+  <script type="text/javascript">
+    const URL = "https://teachablemachine.withgoogle.com/models/cXUi1FWKG/";
+    let model, labelContainer, maxPredictions, image, webcam, isWebcamRunning = false;
+
+    const fishPrices = {
+      "Surmai": "500 - 1000", "Rawas": "600 - 700", "Mandeli": "200 - 250",
+      "Tol": "100 - 150", "Halwa": "500 - 700", "Kaana": "500 - 800",
+      "Bombil": "300 - 400", "Bandga ": "800 - 1000", "SilverCarp": "250 - 350",
+      "Paplet": "800 - 1000", "Rohu": "150 - 300", "CommonCarp": "150 - 250",
+      "Catla": "200 - 300", "Kunni-Parah": "250 - 350"
+    };
+
+    async function loadModel() {
+      const modelURL = URL + "model.json";
+      const metadataURL = URL + "metadata.json";
+      document.getElementById("loading").style.display = "block";
+      model = await tmImage.load(modelURL, metadataURL);
+      maxPredictions = model.getTotalClasses();
+      document.getElementById("loading").style.display = "none";
+
+      labelContainer = document.getElementById("label-container");
+      labelContainer.innerHTML = "";
+      for (let i = 0; i < maxPredictions; i++) {
+        labelContainer.appendChild(document.createElement("div"));
+      }
+    }
+
+    document.getElementById("file-upload").addEventListener("change", function (event) {
+      const file = event.target.files[0];
+      if (file) {
+        image = new Image();
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          image.src = e.target.result;
+          document.getElementById("image-preview").innerHTML = `<img src="${e.target.result}" alt="Preview Image">`;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    document.getElementById("start-btn").addEventListener("click", async function () {
+      if (!image) return alert("Please upload an image first.");
+      if (!model) await loadModel();
+      await predict(image);
+    });
+
+    document.getElementById("webcam-btn").addEventListener("click", async function () {
+      if (!model) await loadModel();
+      const flip = true;
+      webcam = new tmImage.Webcam(300, 300, flip);
+      await webcam.setup();
+      await webcam.play();
+      isWebcamRunning = true;
+      window.requestAnimationFrame(loop);
+
+      document.getElementById("webcam-container").innerHTML = "";
+      document.getElementById("webcam-container").appendChild(webcam.canvas);
+      document.getElementById("stop-webcam-btn").style.display = "block";
+    });
+
+    document.getElementById("stop-webcam-btn").addEventListener("click", async function () {
+      if (webcam && isWebcamRunning) {
+        await webcam.stop();
+        isWebcamRunning = false;
+        document.getElementById("webcam-container").innerHTML = "<p>Webcam stopped</p>";
+        document.getElementById("stop-webcam-btn").style.display = "none";
+      }
+    });
+
+    async function loop() {
+      if (isWebcamRunning) {
+        webcam.update();
+        await predict(webcam.canvas);
+        window.requestAnimationFrame(loop);
+      }
+    }
+
+    async function predict(imgSource) {
+      const prediction = await model.predict(imgSource);
+      let bestPrediction = prediction.reduce((prev, current) => (
+        current.probability > prev.probability ? current : prev
+      ));
+
+      for (let i = 0; i < maxPredictions; i++) {
+        const classPrediction =
+          prediction[i].className + ": " + (prediction[i].probability * 100).toFixed(2) + "%";
+        labelContainer.childNodes[i].innerHTML = classPrediction;
+      }
+
+      document.getElementById("result-message").innerText =
+        "The predicted fish is " + bestPrediction.className + ".";
+
+      const priceRange = fishPrices[bestPrediction.className];
+      if (priceRange) {
+        document.getElementById("price-message").innerText =
+          "Price Range: ₹" + priceRange + " per kg";
+      } else {
+        document.getElementById("price-message").innerText =
+          "Price information not available for this fish.";
+      }
+    }
+
+    window.onload = loadModel;
+  </script>
+</body>
+</html>

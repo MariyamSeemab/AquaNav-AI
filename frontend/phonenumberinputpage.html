@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AquaNav AI - Phone Number</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      padding-top: 32px;
+      color: #077d00;
+      text-align: center;
+      overflow-x: hidden;
+    }
+    .sea-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(to top, #1e90ff 70%, #87cefa);
+      overflow: hidden;
+      z-index: 0;
+    }
+    .wave-layer {
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 200%; height: 200px;
+      background: url('https://freepngimg.com/save/110541-white-wave-free-hq-image/1280x640') repeat-x;
+      background-size: 900px 180px;
+      animation: sea-wave 3s linear infinite;
+      opacity: 0.6;
+    }
+    .wave-layer:nth-child(2) { animation-duration: 12s; opacity: 0.4; }
+    .wave-layer:nth-child(3) { animation-duration: 9s; opacity: 0.5; }
+    .wave-layer:nth-child(4) { animation-duration: 15s; opacity: 0.3; }
+    .wave-layer:nth-child(5) { animation-duration: 20s; opacity: 0.35; }
+    @keyframes sea-wave {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+    .boat {
+      position: absolute;
+      width: 220px;
+      bottom: 110px;
+      left: -260px;
+      animation: sail 30s linear infinite;
+      z-index: 1;
+    }
+    @keyframes sail {
+      0%   { left: -260px; transform: translateY(0) rotate(-1deg); }
+      25%  { transform: translateY(-10px) rotate(2deg); }
+      50%  { transform: translateY(0) rotate(-1deg); }
+      75%  { transform: translateY(-8px) rotate(1deg); }
+      100% { left: 110%; transform: translateY(0) rotate(-1deg); }
+    }
+    .fish {
+      position: absolute;
+      width: 80px;
+      animation: jump 4s ease-in-out infinite;
+      z-index: 2;
+    }
+    .fish1 { left: 20%; bottom: 80px; animation-delay: 0s; }
+    .fish2 { left: 50%; bottom: 90px; animation-delay: 1s; }
+    .fish3 { left: 75%; bottom: 70px; animation-delay: 2s; }
+    @keyframes jump {
+      0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+      10%  { opacity: 1; }
+      40%  { transform: translateY(-120px) rotate(20deg); opacity: 1; }
+      60%  { transform: translateY(-60px) rotate(-15deg); opacity: 1; }
+      90%  { opacity: 0; }
+      100% { transform: translateY(0) rotate(0deg); opacity: 0; }
+    }
+    .header {
+      margin-top: 16px;
+      margin-left: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      justify-content: flex-start;
+      position: relative;
+      z-index: 10;
+    }
+    .logo { width: 44px; border-radius: 10px; }
+    .title { font-size: 1.4em; font-weight: bold; color: #077d00; }
+    .container {
+      max-width: 420px;
+      margin: 48px auto 0 auto;
+      background: rgba(255,255,255,0.95);
+      padding: 34px 24px;
+      border-radius: 18px;
+      box-shadow: 0 4px 24px rgba(7,125,0,0.08);
+      text-align: center;
+      position: relative;
+      z-index: 10;
+    }
+    .phone-mini-icon {
+      width: 34px;
+      margin-bottom: 16px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .greeting { color: #7a868f; font-weight: 500; font-size: 1.04em; margin-bottom: 2px; }
+    .subtitle {
+      font-size: 1.7em; font-weight: bold; letter-spacing: -2px;
+      color: #191c22; margin-bottom: 22px; margin-top: 2px; line-height: 1.15em;
+    }
+    .input-box {
+      width: 90%; max-width: 350px; font-size: 1.15em;
+      padding: 13px 15px; border: none; border-radius: 16px;
+      background: #f2f5f7; margin-bottom: 30px; outline: none;
+      display: block; margin-left: auto; margin-right: auto;
+      transition: background-color 0.3s ease;
+    }
+    .input-box:focus { background: #e9fbe9; }
+    a.button-slide {
+      display: inline-block; height: 50px; width: 260px;
+      line-height: 50px; border-radius: 25px;
+      box-shadow: 0 10px 20px -8px rgba(0,0,0,0.7);
+      background: linear-gradient(135deg, #077d00 0%, #4caf50 100%);
+      position: relative; cursor: pointer;
+      font-family: 'Nunito Sans', Arial, sans-serif;
+      font-weight: 700; font-size: 1.1em; letter-spacing: 3px;
+      color: #fff; overflow: hidden; text-decoration: none;
+      transition: all 0.4s ease; user-select: none;
+      margin: 0 auto; display: block;
+    }
+    a.button-slide:hover {
+      background: linear-gradient(-135deg, #4caf50 0%, #077d00 100%);
+    }
+    a.button-slide span.circle {
+      display: flex; align-items: center; justify-content: center;
+      background-color: #fff; color: #077d00;
+      position: absolute; margin: 5px; height: 40px; width: 40px;
+      top: 0; left: 0; border-radius: 50%; transition: all 1.5s ease;
+    }
+    a.button-slide:hover span.circle {
+      left: 100%; margin-left: -45px; color: #4caf50;
+    }
+    a.button-slide span.title {
+      position: absolute; left: 85px; font-size: 20px;
+      letter-spacing: 1px; color: #fff; transition: all 1.5s linear;
+    }
+    a.button-slide span.title-hover { opacity: 0; }
+    a.button-slide:hover span.title { opacity: 0; }
+    a.button-slide:hover span.title-hover { opacity: 1; left: 60px; }
+    .whatsapp-btn {
+      position: fixed; bottom: 28px; right: 20px;
+      background: #25d366; width: 54px; height: 54px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 18px rgba(32,195,109,0.2);
+      z-index: 99; cursor: pointer; transition: transform 0.2s;
+    }
+    .whatsapp-btn img { width: 32px; }
+    .whatsapp-btn:hover { transform: scale(1.12); }
+  </style>
+</head>
+<body>
+
+  <!-- Sea background -->
+  <div class="sea-bg">
+    <img src="https://png.pngtree.com/png-vector/20250724/ourmid/pngtree-blue-and-red-hand-drawn-style-cruise-ship-ocean-fishing-boat-png-image_16813173.webp" alt="Boat" class="boat" />
+    <img src="https://png.pngtree.com/png-vector/20241009/ourmid/pngtree-ilish-fish-vector-png-image_14031528.png" class="fish fish1" alt="Fish" />
+    <img src="https://png.pngtree.com/png-vector/20241009/ourmid/pngtree-ilish-fish-vector-png-image_14031528.png" class="fish fish2" alt="Fish" />
+    <img src="https://png.pngtree.com/png-vector/20241009/ourmid/pngtree-ilish-fish-vector-png-image_14031528.png" class="fish fish3" alt="Fish" />
+    <div class="wave-layer"></div>
+    <div class="wave-layer"></div>
+    <div class="wave-layer"></div>
+    <div class="wave-layer"></div>
+    <div class="wave-layer"></div>
+  </div>
+
+  <!-- Header -->
+  <div class="header">
+    <img src="https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/c1dfc272-e249-45b8-9d22-8c1411a5e496.png" class="logo" alt="AquaNav AI Logo" />
+    <span class="title">AquaNav AI</span>
+  </div>
+
+  <!-- Container -->
+  <div class="container">
+    <img src="https://cdn-icons-png.flaticon.com/512/483/483947.png" class="phone-mini-icon" alt="Phone Icon" />
+    <div class="greeting">Hi there</div>
+    <div class="subtitle">What's your phone<br>number?</div>
+    <input type="tel" class="input-box" placeholder="Enter your phone number" id="phonenumber" />
+    <a href="#" onclick="goToOTP()" class="button-slide">
+      <span class="circle"><i class="fa-solid fa-phone"></i></span>
+      <span class="title">Continue</span>
+      <span class="title title-hover">Next Step</span>
+    </a>
+  </div>
+
+  <!-- WhatsApp button -->
+  <div class="whatsapp-btn" onclick="window.open('https://wa.me/919326565294', '_blank')">
+    <img src="https://cdn-icons-png.flaticon.com/512/733/733585.png" alt="WhatsApp Icon" />
+  </div>
+
+  <script>
+    function goToOTP() {
+      const phone = document.getElementById("phonenumber").value.trim();
+      if (phone === "") {
+        alert("Please enter your phone number first!");
+        return;
+      }
+      // Redirect to OTP page with phone number
+      window.location.href = "otppage.html?phone=" + encodeURIComponent(phone);
+    }
+  </script>
+</body>
+</html>

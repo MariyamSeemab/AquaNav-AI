@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AquaNav AI - OTP Verification</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #fafcfd;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      overflow: hidden;
+    }
+
+    /* ===== SEA BACKGROUND ===== */
+    .sea-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(to top, #1e90ff 70%, #87cefa);
+      overflow: hidden;
+      z-index: -2;
+    }
+    .wave-layer {
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 200%; height: 200px;
+      background: url('https://freepngimg.com/save/110541-white-wave-free-hq-image/1280x640') repeat-x;
+      background-size: 900px 180px;
+      animation: sea-wave 6s linear infinite;
+      opacity: 0.6;
+    }
+    .wave-layer:nth-child(2) { animation-duration: 10s; opacity: 0.4; }
+    .wave-layer:nth-child(3) { animation-duration: 14s; opacity: 0.3; }
+    .wave-layer:nth-child(4) { animation-duration: 18s; opacity: 0.25; }
+    .wave-layer:nth-child(5) { animation-duration: 22s; opacity: 0.2; }
+
+    @keyframes sea-wave {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .boat {
+      position: absolute;
+      width: 220px;
+      bottom: 110px;
+      left: -260px;
+      animation: sail 30s linear infinite;
+      z-index: 1;
+    }
+    @keyframes sail {
+      0%   { left: -260px; transform: translateY(0) rotate(-1deg); }
+      25%  { transform: translateY(-10px) rotate(2deg); }
+      50%  { transform: translateY(0) rotate(-1deg); }
+      75%  { transform: translateY(-8px) rotate(1deg); }
+      100% { left: 110%; transform: translateY(0) rotate(-1deg); }
+    }
+
+    .fish {
+      position: absolute;
+      width: 80px;
+      animation: jump 4s ease-in-out infinite;
+      z-index: 3;
+    }
+    .fish1 { left: 20%; bottom: 80px; animation-delay: 0s; }
+    .fish2 { left: 50%; bottom: 90px; animation-delay: 1s; }
+    .fish3 { left: 75%; bottom: 70px; animation-delay: 2s; }
+
+    @keyframes jump {
+      0%   { transform: translateY(0) rotate(0deg); opacity: 0; }
+      10%  { opacity: 1; }
+      40%  { transform: translateY(-120px) rotate(20deg); opacity: 1; }
+      60%  { transform: translateY(-60px) rotate(-15deg); opacity: 1; }
+      90%  { opacity: 0; }
+      100% { transform: translateY(0) rotate(0deg); opacity: 0; }
+    }
+
+    /* ===== OTP CONTAINER ===== */
+    .otp-container {
+      max-width: 400px;
+      width: 100%;
+      background: #fff;
+      padding: 32px 24px;
+      border-radius: 22px;
+      box-shadow: 0 6px 24px rgba(30,40,80,0.13);
+      text-align: center;
+      position: relative;
+      z-index: 10; /* on top of sea */
+    }
+    h2 {
+      margin-bottom: 18px;
+      color: #077d00;
+      font-weight: 700;
+    }
+    .otp-inputs {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin: 20px 0 28px 0;
+    }
+    input[type="text"].otp-digit {
+      width: 48px;
+      height: 56px;
+      font-size: 2.1em;
+      font-weight: 700;
+      text-align: center;
+      border-radius: 10px;
+      border: 2px solid #128371;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input[type="text"].otp-digit:focus {
+      border-color: #069399;
+      box-shadow: 0 0 6px #069399a1;
+    }
+
+    .btn-primary {
+      position: relative;
+      display: inline-block;
+      height: 50px;
+      width: 280px;
+      line-height: 50px;
+      border-radius: 25px;
+      box-shadow: 0 10px 20px -8px rgba(0,0,0,0.7);
+      background: linear-gradient(135deg, #077d00 0%, #4caf50 100%);
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 1.1em;
+      letter-spacing: 3px;
+      color: #fff;
+      border: none;
+      margin: 0 auto;
+      user-select: none;
+      text-align: center;
+      transition: all 0.4s ease;
+    }
+    .btn-primary:disabled {
+      background: #b0ccc7;
+      cursor: not-allowed;
+      box-shadow: none;
+      color: #e0f0df;
+    }
+    .btn-primary:hover:enabled {
+      background: linear-gradient(-135deg, #4caf50 0%, #077d00 100%);
+    }
+    .btn-primary span.circle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #fff;
+      color: #077d00;
+      position: absolute;
+      margin: 5px;
+      height: 40px;
+      width: 40px;
+      top: 0;
+      left: 0;
+      border-radius: 50%;
+      transition: all 1.5s ease;
+      font-size: 20px;
+    }
+    .btn-primary:hover span.circle {
+      left: 100%;
+      margin-left: -45px;
+      color: #4caf50;
+    }
+    .btn-primary span.title {
+      font-size: 20px;
+      letter-spacing: 1px;
+      color: #fff;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .btn-primary span.title-hover {
+      opacity: 0;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 20px;
+      letter-spacing: 1px;
+      color: #fff;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .btn-primary:hover span.title { opacity: 0; }
+    .btn-primary:hover span.title-hover { opacity: 1; }
+
+    .resend-container {
+      margin-top: 18px;
+      font-size: 0.92em;
+      color: #4a4a4a;
+    }
+    .resend-btn {
+      background: none;
+      border: none;
+      color: #128371;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+      margin-left: 6px;
+    }
+    .resend-btn:disabled {
+      color: gray;
+      cursor: not-allowed;
+      text-decoration: none;
+    }
+    .message {
+      font-size: 0.95em;
+      color: crimson;
+      height: 20px;
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- SEA BACKGROUND -->
+<div class="sea-bg">
+  <img src="https://png.pngtree.com/png-vector/20250724/ourmid/pngtree-blue-and-red-hand-drawn-style-cruise-ship-ocean-fishing-boat-png-image_16813173.webp" alt="Boat" class="boat" />
+  <img src="https://png.pngtree.com/png-vector/20241009/ourmid/pngtree-ilish-fish-vector-png-image_14031528.png" class="fish fish1" alt="Fish" />
+  <img src="https://png.pngtree.com/png-vector/20241009/ourmid/pngtree-ilish-fish-vector-png-image_14031528.png" class="fish fish2" alt="Fish" />
+  <img src="https://png.pngtree.com/png-vector/20241009/ourmid/pngtree-ilish-fish-vector-png-image_14031528.png" class="fish fish3" alt="Fish" />
+  <div class="wave-layer"></div>
+  <div class="wave-layer"></div>
+  <div class="wave-layer"></div>
+  <div class="wave-layer"></div>
+  <div class="wave-layer"></div>
+</div>
+
+<!-- OTP CONTAINER -->
+<div class="otp-container">
+  <h2>Verify OTP</h2>
+  <p>Enter the 6-digit OTP sent to your registered mobile</p>
+  <div class="message" id="msg"></div>
+  <div class="otp-inputs" id="otp-inputs">
+    <input type="text" maxlength="1" class="otp-digit" inputmode="numeric" pattern="[0-9]*" />
+    <input type="text" maxlength="1" class="otp-digit" inputmode="numeric" pattern="[0-9]*" />
+    <input type="text" maxlength="1" class="otp-digit" inputmode="numeric" pattern="[0-9]*" />
+    <input type="text" maxlength="1" class="otp-digit" inputmode="numeric" pattern="[0-9]*" />
+    <input type="text" maxlength="1" class="otp-digit" inputmode="numeric" pattern="[0-9]*" />
+    <input type="text" maxlength="1" class="otp-digit" inputmode="numeric" pattern="[0-9]*" />
+  </div>
+
+  <button id="verify-btn" class="btn-primary" disabled>
+    <span class="circle"><i class="fas fa-check"></i></span>
+    <span class="title">Verify</span>
+    <span class="title title-hover">Confirm</span>
+  </button>
+
+  <div class="resend-container">
+    Didn't receive OTP?
+    <button class="resend-btn" id="resend-btn" disabled>Resend</button>
+    <span id="timer" style="color:#666; font-weight:600; margin-left:8px;">60s</span>
+  </div>
+</div>
+
+<!-- JS -->
+<script>
+  const otpInputs = document.querySelectorAll('.otp-digit');
+  const verifyBtn = document.getElementById('verify-btn');
+  const msg = document.getElementById('msg');
+  const resendBtn = document.getElementById('resend-btn');
+  const timerSpan = document.getElementById('timer');
+  let countdown, timer = 60;
+
+  otpInputs.forEach((input, idx) => {
+    input.addEventListener('input', (e) => {
+      const value = e.target.value;
+      if (!/^[0-9]$/.test(value)) { e.target.value = ''; return; }
+      if (idx < otpInputs.length -1) otpInputs[idx +1].focus();
+      checkEnableVerify();
+    });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === "Backspace" && !e.target.value && idx > 0) {
+        otpInputs[idx - 1].focus();
+      }
+    });
+  });
+
+  function checkEnableVerify() {
+    const filled = [...otpInputs].every(input => input.value.trim() !== '');
+    verifyBtn.disabled = !filled;
+    if (filled) msg.textContent = '';
+  }
+
+  verifyBtn.addEventListener('click', () => {
+    const otp = [...otpInputs].map(i => i.value).join('');
+    if (otp === "221850") {
+      msg.style.color = 'green';
+      msg.textContent = "OTP Verified Successfully!";
+      // ✅ Redirect to dashboard.html
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 1000);
+    } else {
+      msg.style.color = 'crimson';
+      msg.textContent = "Invalid OTP. Please try again.";
+    }
+  });
+
+  function startTimer() {
+    resendBtn.disabled = true;
+    timer = 60;
+    timerSpan.textContent = timer + "s";
+    countdown = setInterval(() => {
+      timer--;
+      timerSpan.textContent = timer + "s";
+      if (timer <= 0) {
+        clearInterval(countdown);
+        resendBtn.disabled = false;
+        timerSpan.textContent = '';
+      }
+    }, 1000);
+  }
+
+  resendBtn.addEventListener('click', () => {
+    alert('OTP resent!');
+    startTimer();
+  });
+
+  window.onload = () => {
+    otpInputs[0].focus();
+    startTimer();
+  }
+</script>
+</body>
+</html>

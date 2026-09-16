@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AquaNav AI - Your Name</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600&display=swap" rel="stylesheet" />
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <style>
+    /* Base styles */
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: #077d00;
+      text-align: center;
+      overflow-x: hidden;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Sea background */
+    .sea-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: linear-gradient(to top, #1e90ff 70%, #87cefa);
+      overflow: hidden;
+      z-index: 0; /* behind everything */
+    }
+
+    .wave-layer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 200%;
+      height: 200px;
+      background: url('https://freepngimg.com/save/110541-white-wave-free-hq-image/1280x640') repeat-x; /* reliable wave image */
+      background-size: 900px 180px;
+      animation: sea-wave 3s linear infinite;
+      opacity: 0.6;
+    }
+
+    .wave-layer:nth-child(2) { animation-duration: 12s; opacity: 0.4; }
+    .wave-layer:nth-child(3) { animation-duration: 9s; opacity: 0.5; }
+    .wave-layer:nth-child(4) { animation-duration: 15s; opacity: 0.3; }
+    .wave-layer:nth-child(5) { animation-duration: 20s; opacity: 0.35; }
+
+    @keyframes sea-wave {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* Boat */
+    .boat {
+      position: absolute;
+      width: 220px;
+      bottom: 110px;
+      left: -260px;
+      animation: sail 30s linear infinite;
+      z-index: 1;
+    }
+
+    @keyframes sail {
+      0%   { left: -260px; transform: translateY(0) rotate(-1deg); }
+      25%  { transform: translateY(-10px) rotate(2deg); }
+      50%  { transform: translateY(0) rotate(-1deg); }
+      75%  { transform: translateY(-8px) rotate(1deg); }
+      100% { left: 110%; transform: translateY(0) rotate(-1deg); }
+    }
+
+    /* Fish */
+    .fish {
+      position: absolute;
+      width: 80px;
+      animation: jump 4s ease-in-out infinite;
+      z-index: 2;
+    }
+    .fish1 { left: 20%; bottom: 80px; animation-delay: 0s; }
+    .fish2 { left: 50%; bottom: 90px; animation-delay: 1s; }
+    .fish3 { left: 75%; bottom: 70px; animation-delay: 2s; }
+
+    @keyframes jump {
+  0%   { transform: translateY(0) rotate(0deg); opacity: 0; }   /* hidden inside wave */
+  10%  { opacity: 1; }   /* start visible while going up */
+  40%  { transform: translateY(-120px) rotate(20deg); opacity: 1; } /* peak jump */
+  60%  { transform: translateY(-60px) rotate(-15deg); opacity: 1; } /* falling down */
+  90%  { opacity: 0; }   /* almost back inside wave, hide */
+  100% { transform: translateY(0) rotate(0deg); opacity: 0; }   /* hidden inside wave */
+}
+    /* Header & Container */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+      margin-left: 16px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .logo {
+      width: 44px;
+      border-radius: 10px;
+      background: #e2f4ed;
+      padding: 6px;
+    }
+
+    .title {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #077d00;
+      margin-bottom: 10px;
+      margin-left: 16px;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: 38px auto 0 auto;
+      background: rgba(255,255,255,0.95);
+      padding: 32px 24px 24px;
+      border-radius: 20px;
+      box-shadow: 0 4px 24px rgba(0,125,160,0.04);
+      text-align: center;
+      position: relative;
+      z-index: 10;
+    }
+
+    .user-icon {
+      width: 40px;
+      margin: 0 auto 14px auto;
+      display: block;
+    }
+
+    .subtitle {
+      font-size: 1.28em;
+      font-weight: 600;
+      color: #23292e;
+      margin-bottom: 22px;
+    }
+
+    .input-box {
+      width: 90%;
+      max-width: 320px;
+      font-size: 1.18em;
+      padding: 14px 16px;
+      border: none;
+      border-radius: 16px;
+      background: #f2f5f7;
+      margin-top: 6px;
+      margin-bottom: 30px;
+      outline: 2px solid #e2f4ed;
+      box-sizing: border-box;
+      transition: outline-color 0.3s, background-color 0.3s;
+    }
+
+    .input-box:focus {
+      outline: 2px solid #077d00;
+      background: #e9fbe9;
+    }
+
+    /* Slide animated Continue button */
+    a.btn-slide {
+      position: relative;
+      display: inline-block;
+      height: 50px;
+      width: 260px;
+      line-height: 50px;
+      margin: 25px 0;
+      padding: 0;
+      border-radius: 25px;
+      box-shadow: 0 10px 20px -8px rgba(0, 125, 0, 0.7);
+      background: linear-gradient(135deg, #077d00 0%, #4caf50 100%);
+      color: #fff;
+      font-family: 'Nunito Sans', Arial, sans-serif;
+      font-weight: 700;
+      font-size: 1.1em;
+      letter-spacing: 3px;
+      text-decoration: none;
+      cursor: pointer;
+      overflow: hidden;
+      user-select: none;
+      transition: all 0.4s ease;
+    }
+
+    a.btn-slide:active {
+      box-shadow: 0 8px 16px -8px rgba(0, 125, 0, 0.7);
+      transform: scale(0.96);
+    }
+
+    a.btn-slide:hover {
+      background: linear-gradient(-135deg, #4caf50 0%, #077d00 100%);
+    }
+
+    a.btn-slide span.circle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #fff;
+      color: #077d00;
+      position: absolute;
+      margin: 5px;
+      height: 40px;
+      width: 40px;
+      top: 0;
+      left: 0;
+      border-radius: 50%;
+      transition: all 1.5s ease;
+      font-size: 20px;
+    }
+
+    a.btn-slide:hover span.circle {
+      left: 100%;
+      margin-left: -45px;
+      color: #4caf50;
+    }
+
+    a.btn-slide span.title {
+      font-family: 'Nunito Sans';
+      position: absolute;
+      left: 85px;
+      font-size: 20px;
+      letter-spacing: 1px;
+      color: #fff;
+      transition: all 1.5s linear;
+    }
+
+    a.btn-slide span.title-hover {
+      opacity: 0;
+    }
+
+    a.btn-slide:hover span.title {
+      opacity: 0;
+    }
+
+    a.btn-slide:hover span.title-hover {
+      opacity: 1;
+      left: 60px;
+      position: absolute;
+    }
+
+    @media (max-width: 540px) {
+      a.btn-slide { width: 240px; }
+      h1 { font-size: 36px; }
+      p { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sea Background -->
+  <div class="sea-bg">
+    <img src="https://png.pngtree.com/png-vector/20250724/ourmid/pngtree-blue-and-red-hand-drawn-style-cruise-ship-ocean-fishing-boat-png-image_16813173.webp" alt="Boat" class="boat" />
+    <img src="https://png.pngtree.com/png-vector/20241009/ourmid/pngtree-ilish-fish-vector-png-image_14031528.png" class="fish fish1" alt="Fish" />
+    <img src="https://png.pngtree.com/png-vector/20241009/ourmid/pngtree-ilish-fish-vector-png-image_14031528.png" class="fish fish2" alt="Fish" />
+    <img src="https://png.pngtree.com/png-vector/20241009/ourmid/pngtree-ilish-fish-vector-png-image_14031528.png" class="fish fish3" alt="Fish" />
+    <div class="wave-layer"></div>
+    <div class="wave-layer"></div>
+    <div class="wave-layer"></div>
+    <div class="wave-layer"></div>
+    <div class="wave-layer"></div>
+  </div>
+
+  <!-- Header & Container -->
+  <div class="header">
+    <img src="https://user-gen-media-assets.s3.amazonaws.com/gpt4o_images/c1dfc272-e249-45b8-9d22-8c1411a5e496.png" class="logo" alt="AquaNav AI Logo" />
+    <span class="title">AquaNav AI</span>
+  </div>
+
+  <div class="container">
+    <img src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png" class="user-icon" alt="User Icon" />
+    <div class="subtitle">What's your name</div>
+    <input type="text" class="input-box" placeholder="Enter your name" id="username" />
+
+    <a href="dashboard.html" class="btn-slide">
+      <span class="circle"><i class="fa-solid fa-user"></i></span>
+      <span class="title">Continue</span>
+      <span class="title title-hover">Let's Go!</span>
+    </a>
+  </div>
+
+</body>
+</html>

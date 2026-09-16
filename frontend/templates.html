@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Water Route Finder</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #eef6fb;
+      text-align: center;
+      padding: 40px;
+    }
+    h1 {
+      color: #004080;
+    }
+    form {
+      background: white;
+      display: inline-block;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input {
+      width: 250px;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-top: 5px;
+    }
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      border: none;
+      background: #0077cc;
+      color: white;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #005fa3;
+    }
+  </style>
+</head>
+<body>
+  <h1>🚢 Water Route Finder</h1>
+  <form action="/route" method="POST">
+    <label for="start">Starting Location:</label>
+    <input type="text" name="start" id="start" placeholder="e.g. Mumbai" required>
+    
+    <label for="end">Destination:</label>
+    <input type="text" name="end" id="end" placeholder="e.g. Alibaug" required>
+    
+    <button type="submit">Find Route</button>
+  </form>
+</body>
+</html>

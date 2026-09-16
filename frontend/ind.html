@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Water Route Finder</title>
+  <style>
+    body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg,#0077b6,#00b4d8); margin:0; color:#333; }
+    header { background: rgba(255,255,255,0.9); padding:20px; text-align:center; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
+    header h1 { margin:0; font-size:28px; color:#0077b6; }
+    .container { max-width:1100px; margin:24px auto; padding:20px; background:#fff; border-radius:12px; box-shadow:0 6px 16px rgba(0,0,0,0.12); }
+    form { display:flex; gap:16px; flex-wrap:wrap; align-items:end; }
+    .input-group { display:flex; flex-direction:column; min-width:240px; flex:1; }
+    label { font-weight:600; margin-bottom:6px; color:#0077b6; }
+    input { padding:10px; border:1px solid #ccc; border-radius:8px; font-size:16px; }
+    button { background:#0077b6; color:#fff; padding:12px 18px; font-weight:700; border:none; border-radius:10px; cursor:pointer; }
+    button:hover{ background:#005f8c; }
+    #status { margin-top:14px; padding:12px; background:#f6fbfe; border-radius:8px; font-weight:600; color:#05445e; white-space:pre-line; }
+    iframe { margin-top:18px; width:100%; height:640px; border:none; border-radius:10px; box-shadow:0 6px 14px rgba(0,0,0,0.12); }
+    .note { margin-top:10px; color:#555; font-size:14px; text-align:center; }
+    .disasters { margin-top:20px; display:flex; gap:10px; flex-wrap:wrap; }
+    .disasters button { flex:1; min-width:120px; background:#e63946; }
+    .disasters button:hover { background:#b02a37; }
+    .disasters .clear { background:#6c757d; }
+    .disasters .clear:hover { background:#495057; }
+    .tracking { margin-top:15px; display:flex; gap:12px; }
+    .tracking button { flex:1; background:#28a745; }
+    .tracking button.stop { background:#dc3545; }
+  </style>
+</head>
+<body>
+  <header><h1>🚢 Smart Water Route Finder</h1></header>
+
+  <div class="container">
+    <form id="routeForm">
+      <div class="input-group">
+        <label for="start">Starting Location</label>
+        <input type="text" id="start" placeholder="e.g. Mumbai" required />
+      </div>
+
+      <div class="input-group">
+        <label for="end">Destination</label>
+        <input type="text" id="end" placeholder="e.g. Alibaug" required />
+      </div>
+
+      <div style="display:flex;align-items:center;">
+        <button type="submit">Find Route</button>
+      </div>
+    </form>
+
+    <!-- Disaster Controls -->
+    <div class="disasters">
+      <button onclick="addHazard('cyclone')">🌪 Cyclone</button>
+      <button onclick="addHazard('tsunami')">🌊 Tsunami</button>
+      <button onclick="addHazard('oilspill')">🛢 Oil Spill</button>
+      <button onclick="addHazard('earthquake')">🌍 Earthquake</button>
+      <button onclick="addHazard('hazard')">⚠️ Hazard</button>
+      <button class="clear" onclick="clearHazards()">🧹 Clear Hazards</button>
+    </div>
+
+    <!-- Tracking Controls -->
+    <div class="tracking">
+      <button onclick="startTracking()">▶️ Start Tracking</button>
+      <button class="stop" onclick="stopTracking()">⏹ Stop Tracking</button>
+    </div>
+
+    <div id="status">Enter start and destination and click "Find Route".</div>
+
+    <iframe id="mapFrame" srcdoc="<p style='padding:20px'>Map will appear here after you request a route.</p>"></iframe>
+
+    <div class="note">Make sure backend is running: <code>python backend.py</code></div>
+  </div>
+
+  <script>
+    const statusDiv = document.getElementById("status");
+    const iframe = document.getElementById("mapFrame");
+    let trackingInterval = null;
+    let destination = "";
+
+    // ROUTE FETCHER
+    async function fetchRoute(start, end, current=false) {
+      if (!start || !end) return;
+
+      statusDiv.textContent = current ? "📡 Updating live route..." : "⏳ Calculating route...";
+      iframe.srcdoc = "<p style='padding:20px'>Building map... please wait.</p>";
+
+      try {
+        const resp = await fetch(`/route?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}&straight=true`);
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.error || resp.statusText);
+
+        iframe.srcdoc = data.map_html;
+        statusDiv.textContent =
+          `${current ? "📍 Live Position → " : "🚢 Route from "} ${data.start} → ${data.end}\n📍 Waypoints: ${data.waypoints} | 🌊 Distance: ~${data.distance_km} km\n🔥 Hazards active: ${data.hazards_active}`;
+      } catch (err) {
+        console.error(err);
+        statusDiv.textContent = "❌ Error: " + (err.message || err);
+      }
+    }
+
+    document.getElementById("routeForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const start = document.getElementById("start").value.trim();
+      destination = document.getElementById("end").value.trim();
+      fetchRoute(start, destination);
+    });
+
+    // DISASTER BUTTONS
+    async function addHazard(type) {
+      let hazard = null;
+      if (type === "cyclone") hazard = {type:"cyclone", mode:"circle", center:[72.8,18.9], radius_km:50};
+      else if (type === "tsunami") hazard = {type:"tsunami", mode:"polygon", polygon:[[72.7,18.8],[72.9,18.8],[72.9,19.0],[72.7,19.0]]};
+      else if (type === "oilspill") hazard = {type:"oilspill", mode:"circle", center:[72.6,18.7], radius_km:20};
+      else if (type === "earthquake") hazard = {type:"earthquake", mode:"circle", center:[73.0,19.1], radius_km:30};
+      else hazard = {type:"hazard", mode:"polygon", polygon:[[72.5,18.6],[72.6,18.6],[72.6,18.7],[72.5,18.7]]};
+
+      await fetch("/hazards", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(hazard)});
+      if (destination) fetchRoute("current", destination, true);
+    }
+
+    async function clearHazards() {
+      await fetch("/hazards", {method:"DELETE"});
+      if (destination) fetchRoute("current", destination, true);
+    }
+
+    // LIVE TRACKING
+    function startTracking() {
+      if (!destination) {
+        alert("Set a destination first!");
+        return;
+      }
+      if (trackingInterval) return;
+
+      trackingInterval = setInterval(() => {
+        navigator.geolocation.getCurrentPosition(pos => {
+          const coords = `${pos.coords.longitude},${pos.coords.latitude}`;
+          fetchRoute(coords, destination, true);
+        }, err => {
+          console.error(err);
+          statusDiv.textContent = "⚠️ Location access denied.";
+        });
+      }, 10000); // update every 10s
+      statusDiv.textContent = "📡 Live tracking started...";
+    }
+
+    function stopTracking() {
+      clearInterval(trackingInterval);
+      trackingInterval = null;
+      statusDiv.textContent = "🛑 Live tracking stopped.";
+    }
+  </script>
+</body>
+</html>

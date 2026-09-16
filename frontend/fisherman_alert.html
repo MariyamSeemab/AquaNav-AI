@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fisherman Disaster Alert - Icons</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+html,body,#map{height:100%;margin:0;padding:0;font-family:Arial,sans-serif}
+#map{width:100%;height:100vh}
+#ui{position:absolute;top:12px;left:12px;z-index:999;width:360px;background:rgba(255,255,255,0.96);padding:12px;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.14)}
+#ui h2{margin:0 0 8px 0;font-size:16px;color:#033}
+#status{font-size:13px;margin-bottom:8px}
+#alerts{max-height:50vh;overflow:auto;margin-top:8px}
+.alert-item{padding:8px;border-radius:8px;margin-bottom:8px;background:#fff7f0;border-left:6px solid #d33}
+.controls{display:flex;gap:8px;flex-wrap:wrap}
+.controls > *{flex:1 1 auto}
+button{padding:8px 10px;border-radius:8px;border:0;background:#0077b6;color:white;cursor:pointer}
+button.ghost{background:transparent;color:#0077b6;border:1px solid #cfe}
+#legend{position:absolute;bottom:12px;left:12px;z-index:999;background:rgba(255,255,255,0.96);padding:8px;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.14)}
+#legend img{width:20px;height:20px;vertical-align:middle;margin-right:6px;}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="ui">
+<h2>AquaNav AI — Ocean Alerts</h2>
+<div id="status">Initializing...</div>
+<div class="controls" style="margin-bottom:8px">
+<button id="locBtn">Enable Location</button>
+<button id="pollBtn" class="ghost">Start Polling</button>
+</div>
+<div style="margin-top:10px">
+<button id="demoBtn" class="ghost">Add Demo Event</button>
+<button id="clearBtn" class="ghost" style="margin-left:6px">Clear Alerts</button>
+</div>
+<div id="alerts" aria-live="polite" style="margin-top:10px"></div>
+</div>
+<div id="legend">
+<strong>Legend</strong><br>
+<img src="https://img.icons8.com/fluency/48/000000/water.png"/>Tsunami<br>
+<img src="https://img.icons8.com/fluency/48/000000/oil-barrel.png"/>Oil Spill<br>
+<img src="https://img.icons8.com/fluency/48/000000/earthquake.png"/>Earthquake<br>
+<img src="https://img.icons8.com/fluency/48/000000/wind.png"/>Strong Wind<br>
+<img src="https://img.icons8.com/fluency/48/000000/sunken-ship.png"/>Shipwreck<br>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function(){
+const apiKey = "86037b1cf14f954df330ba46aa831a13";
+const POLL_INTERVAL = 60000;
+const WIND_THRESHOLD = 12;
+
+// Map centered over Indian Ocean
+const map = L.map('map').setView([0,75],3);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18, attribution:'© OpenStreetMap'}).addTo(map);
+
+const statusEl = document.getElementById('status');
+const alertsEl = document.getElementById('alerts');
+const locBtn = document.getElementById('locBtn');
+const demoBtn = document.getElementById('demoBtn');
+const clearBtn = document.getElementById('clearBtn');
+const pollBtn = document.getElementById('pollBtn');
+
+let userMarker=null;
+let disasterLayer = L.layerGroup().addTo(map);
+const seenKeys = new Set();
+
+function speak(msg){
+  if('speechSynthesis' in window){
+    const utter = new SpeechSynthesisUtterance(msg);
+    utter.lang='en-US'; utter.rate=1; speechSynthesis.speak(utter);
+  }
+}
+
+// Custom icons
+const icons = {
+  'Tsunami': L.icon({iconUrl:'https://img.icons8.com/fluency/48/000000/water.png', iconSize:[32,32]}),
+  'Oil Spill': L.icon({iconUrl:'https://img.icons8.com/fluency/48/000000/oil-barrel.png', iconSize:[32,32]}),
+  'Earthquake': L.icon({iconUrl:'https://img.icons8.com/fluency/48/000000/earthquake.png', iconSize:[32,32]}),
+  'Strong Wind': L.icon({iconUrl:'https://img.icons8.com/fluency/48/000000/wind.png', iconSize:[32,32]}),
+  'Shipwreck': L.icon({iconUrl:'https://img.icons8.com/fluency/48/000000/sunken-ship.png', iconSize:[32,32]})
+};
+
+function pushAlert(payload){
+  const key = `${payload.type}|${payload.message.slice(0,120)}`;
+  if(seenKeys.has(key)) return;
+  seenKeys.add(key);
+
+  const div = document.createElement('div');
+  div.className='alert-item';
+  const when = new Date(payload.time*1000 || Date.now());
+  div.innerHTML = `<strong>${payload.type}</strong> <small>${when.toLocaleString()}</small><div>${payload.message}</div>`;
+  alertsEl.prepend(div);
+
+  // Add marker with icon
+  L.marker([payload.lat,payload.lon],{icon:icons[payload.type]}).addTo(disasterLayer)
+    .bindPopup(`<b>${payload.type}</b><br>${payload.message}`);
+
+  speak(`${payload.type} alert: ${payload.message}`);
+  if(Notification.permission==="granted") new Notification(payload.type,{body:payload.message});
+}
+
+function ensureNotification(){ if(Notification.permission!=="granted"&&Notification.permission!=="denied") Notification.requestPermission(); }
+ensureNotification();
+
+clearBtn.addEventListener('click',()=>{alertsEl.innerHTML='';disasterLayer.clearLayers();seenKeys.clear();});
+
+locBtn.addEventListener('click',()=>{
+  if(!navigator.geolocation){statusEl.innerText='Geolocation not supported';return;}
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const lat=pos.coords.latitude,lon=pos.coords.longitude;
+    statusEl.innerText=`Location: ${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+    map.setView([lat,lon],5);
+    if(!userMarker) userMarker=L.marker([lat,lon],{title:'You'}).addTo(map).bindPopup('You are here');
+    else userMarker.setLatLng([lat,lon]);
+  },()=>{statusEl.innerText='Location denied';},{enableHighAccuracy:true});
+});
+
+demoBtn.addEventListener('click',()=>{
+  const types=['Earthquake','Tsunami','Oil Spill','Shipwreck','Strong Wind'];
+  const sampleType = types[Math.floor(Math.random()*types.length)];
+  const sample={type:sampleType,message:`Demo ${sampleType} alert`,lat:Math.random()*20-10,lon:65+Math.random()*40,time:Math.floor(Date.now()/1000)};
+  pushAlert(sample);map.panTo([sample.lat,sample.lon]);
+});
+
+// Simulated ocean alerts
+async function fetchDisasters(){
+  statusEl.innerText='Fetching ocean disasters...';
+  if(Math.random()<0.2) pushAlert({type:'Tsunami',message:'Tsunami warning in ocean',lat:Math.random()*20-10,lon:65+Math.random()*40,time:Math.floor(Date.now()/1000)});
+  if(Math.random()<0.1) pushAlert({type:'Oil Spill',message:'Oil spill reported',lat:Math.random()*20-10,lon:65+Math.random()*40,time:Math.floor(Date.now()/1000)});
+  if(Math.random()<0.05) pushAlert({type:'Shipwreck',message:'Shipwreck reported',lat:Math.random()*20-10,lon:65+Math.random()*40,time:Math.floor(Date.now()/1000)});
+  for(let i=0;i<5;i++){
+    const lat = Math.random()*20-10, lon = 65+Math.random()*40;
+    const windSpeed = Math.floor(Math.random()*20);
+    if(windSpeed>=WIND_THRESHOLD){
+      pushAlert({type:'Strong Wind',message:`Wind ${windSpeed} m/s at sea`,lat,lon,time:Math.floor(Date.now()/1000)});
+    }
+  }
+  statusEl.innerText='Polling complete '+new Date().toLocaleTimeString();
+}
+
+let pollHandle=null;
+pollBtn.addEventListener('click',()=>{
+  if(!pollHandle){fetchDisasters();pollHandle=setInterval(fetchDisasters,POLL_INTERVAL);pollBtn.innerText='Stop Polling';pollBtn.classList.remove('ghost');statusEl.innerText='Polling every '+(POLL_INTERVAL/1000)+'s';}
+  else{clearInterval(pollHandle);pollHandle=null;pollBtn.innerText='Start Polling';pollBtn.classList.add('ghost');statusEl.innerText='Polling stopped';}
+});
+})();
+</script>
+</body>
+</html>

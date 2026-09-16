@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>India Sea Weather Forecast</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg,#74ebd5,#ACB6E5);
+      color: #222;
+      text-align: center;
+    }
+
+    header {
+      padding: 15px;
+      font-size: 24px;
+      font-weight: bold;
+      background: rgba(255,255,255,0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    .search-box {
+      margin: 15px;
+    }
+
+    input {
+      padding: 8px;
+      border-radius: 6px;
+      border: none;
+      width: 200px;
+    }
+    button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      background: #0077b6;
+      color: #fff;
+      cursor: pointer;
+      margin-left: 5px;
+    }
+
+    .weather-container {
+      margin: 20px auto;
+      max-width: 900px;
+      padding: 20px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+
+    .current {
+      font-size: 40px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    .details {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .forecast {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .day {
+      flex: 1 1 calc(14% - 10px);
+      background: rgba(255,255,255,0.3);
+      border-radius: 12px;
+      padding: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    /* ICONS */
+    .icon { width:50px;height:50px;margin:0 auto 10px;position:relative; }
+    .sun { width:40px;height:40px;background:radial-gradient(circle,#FFD93B,#FFB347);border-radius:50%;margin:auto;animation:spin 10s linear infinite; }
+    @keyframes spin {100%{transform:rotate(360deg);} }
+    .cloud { width:50px;height:30px;background:#fff;border-radius:50px;position:relative;animation:float 4s ease-in-out infinite;}
+    .cloud:before,.cloud:after{content:'';position:absolute;background:#fff;border-radius:50%;}
+    .cloud:before{width:30px;height:30px;left:-15px;top:0;}
+    .cloud:after{width:25px;height:25px;right:-10px;top:5px;}
+    @keyframes float{0%,100%{transform:translateX(0);}50%{transform:translateX(10px);} }
+    .raindrop{width:6px;height:15px;background:#00f;border-radius:50%;position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);animation:rain 1s linear infinite;}
+    @keyframes rain{0%{opacity:0;transform:translate(-50%,0);}50%{opacity:1;transform:translate(-50%,15px);}100%{opacity:0;transform:translate(-50%,30px);} }
+    .thunder{width:6px;height:25px;background:yellow;position:absolute;bottom:-25px;left:50%;transform:translateX(-50%) rotate(20deg);animation:flash 1s infinite;}
+    @keyframes flash{0%,50%,100%{opacity:0;}25%,75%{opacity:1;} }
+  </style>
+</head>
+<body>
+  <header>🌦 India Sea Weather Forecast</header>
+
+  <div class="search-box">
+    <input type="text" id="cityInput" placeholder="Enter port/city e.g. Mumbai">
+    <button onclick="getWeather()">Search</button>
+    <button onclick="getLocationWeather()">📍 Use My Location</button>
+  </div>
+
+  <div class="weather-container">
+    <div id="location">📍 Enter city or use location</div>
+    <div class="current" id="temperature">--°C</div>
+    <div class="details" id="details">Humidity: -- | Wind: --</div>
+    <div class="forecast" id="forecast"></div>
+  </div>
+
+  <script>
+    const API_KEY = "986658c7044f4ccd88451554251809";
+
+    function renderWeather(data) {
+      document.getElementById("location").textContent = `📍 ${data.location.name}, ${data.location.region}`;
+      document.getElementById("temperature").textContent = `${data.current.temp_c}°C`;
+      document.getElementById("details").textContent = 
+        `Humidity: ${data.current.humidity}% | Wind: ${data.current.wind_kph} km/h`;
+
+      let forecastDiv = document.getElementById("forecast");
+      forecastDiv.innerHTML = "";
+
+      data.forecast.forecastday.forEach(day => {
+        let div = document.createElement("div");
+        div.className = "day";
+        let condition = day.day.condition.text.toLowerCase();
+
+        let iconHTML = "";
+        if (condition.includes("sun") || condition.includes("clear")) 
+          iconHTML = '<div class="icon"><div class="sun"></div></div>';
+        else if (condition.includes("rain") && condition.includes("thunder")) 
+          iconHTML = '<div class="icon"><div class="cloud"></div><div class="raindrop"></div><div class="thunder"></div></div>';
+        else if (condition.includes("rain")) 
+          iconHTML = '<div class="icon"><div class="cloud"></div><div class="raindrop"></div></div>';
+        else if (condition.includes("cloud")) 
+          iconHTML = '<div class="icon"><div class="cloud"></div></div>';
+        else 
+          iconHTML = '<div class="icon"><div class="sun"></div></div>';
+
+        div.innerHTML = `
+          ${iconHTML}
+          <div>${new Date(day.date).toLocaleDateString("en-US",{weekday:"short"})}</div>
+          <div>${day.day.maxtemp_c}° / ${day.day.mintemp_c}°</div>
+        `;
+        forecastDiv.appendChild(div);
+      });
+    }
+
+    function getWeather() {
+      let city = document.getElementById("cityInput").value;
+      if (!city) return;
+      fetch(`https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${city}&days=7&aqi=no&alerts=no`)
+        .then(res => res.json())
+        .then(data => renderWeather(data))
+        .catch(()=>alert("❌ Error fetching weather"));
+    }
+
+    function getLocationWeather() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+          let lat = pos.coords.latitude;
+          let lon = pos.coords.longitude;
+          fetch(`https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${lat},${lon}&days=7&aqi=no&alerts=no`)
+            .then(res => res.json())
+            .then(data => renderWeather(data))
+            .catch(()=>alert("❌ Error fetching location weather"));
+        });
+      }
+    }
+  </script>
+</body>
+</html>

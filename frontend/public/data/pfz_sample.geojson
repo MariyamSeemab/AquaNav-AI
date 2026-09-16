@@ -1,0 +1,9 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    { "type": "Feature", "properties": { "intensity": 0.8 }, "geometry": { "type": "Point", "coordinates": [83.5, 13.3] } },
+    { "type": "Feature", "properties": { "intensity": 0.6 }, "geometry": { "type": "Point", "coordinates": [84.1, 14.8] } },
+    { "type": "Feature", "properties": { "intensity": 0.9 }, "geometry": { "type": "Point", "coordinates": [85.2, 13.9] } },
+    { "type": "Feature", "properties": { "intensity": 0.5 }, "geometry": { "type": "Point", "coordinates": [86.0, 12.8] } }
+  ]
+}

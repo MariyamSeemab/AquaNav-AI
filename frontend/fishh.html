@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>India Offshore Fishing Map — Species Circles</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; }
+    #map { height: 100vh; width: 100%; }
+    .legend {
+      position: absolute;
+      right: 12px;
+      top: 12px;
+      z-index: 1000;
+      background: rgba(255,255,255,0.9);
+      padding: 10px 14px;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      font-size: 14px;
+    }
+    .legend h4 {
+      margin: 0 0 6px 0;
+      font-size: 16px;
+    }
+    .legend div {
+      display: flex;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+    .legend span.color-box {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      margin-right: 6px;
+      border-radius: 50%;
+      border: 1px solid #333;
+    }
+  </style>
+</head>
+<body>
+<div id="map"></div>
+
+<div class="legend">
+  <h4>Fish Species Index</h4>
+  <div><span class="color-box" style="background:#1e90ff"></span> Bombil</div>
+  <div><span class="color-box" style="background:#ff6347"></span> Rawas</div>
+  <div><span class="color-box" style="background:#32cd32"></span> Surmai</div>
+  <div><span class="color-box" style="background:#ff69b4"></span> Prawns</div>
+  <div><span class="color-box" style="background:#ffa500"></span> Sardine</div>
+  <div><span class="color-box" style="background:#800080"></span> Tuna</div>
+  <div><span class="color-box" style="background:#00ced1"></span> Mackerel</div>
+  <div><span class="color-box" style="background:#8b4513"></span> Seer Fish</div>
+  <div><span class="color-box" style="background:#4682b4"></span> Hilsa</div>
+  <div><span class="color-box" style="background:#808080"></span> Pomfret</div>
+  <div><span class="color-box" style="background:#ff4500"></span> Snapper</div>
+  <div><span class="color-box" style="background:#a52a2a"></span> Catla</div>
+  <div><span class="color-box" style="background:#ffb6c1"></span> Rohu</div>
+  <div><span class="color-box" style="background:#20b2aa"></span> Indian Mackerel</div>
+  <div><span class="color-box" style="background:#deb887"></span> Pomfret (AP)</div>
+</div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+const map = L.map('map').setView([20.5937, 78.9629], 5);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '© OpenStreetMap contributors'
+}).addTo(map);
+
+const speciesColors = {
+  "Bombil": "#1e90ff",
+  "Rawas": "#ff6347",
+  "Surmai": "#32cd32",
+  "Prawns": "#ff69b4",
+  "Sardine": "#ffa500",
+  "Tuna": "#800080",
+  "Mackerel": "#00ced1",
+  "Seer Fish": "#8b4513",
+  "Hilsa": "#4682b4",
+  "Pomfret": "#808080",
+  "Snapper": "#ff4500",
+  "Catla": "#a52a2a",
+  "Rohu": "#ffb6c1",
+  "Indian Mackerel": "#20b2aa",
+  "Pomfret (AP)": "#deb887"
+};
+
+// fishing spots including new cities
+const fishingSpots = [
+  { name: "Mumbai Offshore", lat: 18.90, lng: 72.70, species: ["Bombil", "Rawas", "Surmai"] },
+  { name: "Kochi Offshore", lat: 9.80,  lng: 76.10, species: ["Prawns", "Sardine", "Tuna"] },
+  { name: "Chennai Offshore", lat: 13.00, lng: 80.40, species: ["Mackerel", "Seer Fish"] },
+  { name: "Visakhapatnam Offshore", lat: 17.50, lng: 83.50, species: ["Hilsa", "Pomfret"] },
+  { name: "Goa Offshore", lat: 15.20, lng: 73.90, species: ["Snapper", "Mackerel"] },
+  { name: "Mangaluru Offshore", lat: 12.9141, lng: 74.8560, species: ["Mackerel", "Sardine"] },
+  { name: "Kolkata Offshore", lat: 22.5726, lng: 88.3639, species: ["Catla", "Rohu"] },
+  { name: "Bhubaneswar Offshore", lat: 20.2961, lng: 85.8245, species: ["Hilsa", "Indian Mackerel"] },
+  { name: "Andhra Pradesh Coast", lat: 15.9129, lng: 79.7400, species: ["Pomfret (AP)", "Indian Mackerel"] },
+  { name: "Surat Offshore", lat: 21.1702, lng: 72.8311, species: ["Bombil", "Rawas"] },
+  { name: "Thanjavur Offshore", lat: 10.7867, lng: 79.1378, species: ["Mackerel", "Pomfret (AP)"] },
+  { name: "Machilipatnam Offshore", lat: 16.1760, lng: 81.1306, species: ["Indian Mackerel", "Pomfret (AP)"] },
+  { name: "Nellore Offshore", lat: 14.4426, lng: 79.9865, species: ["Indian Mackerel", "Pomfret (AP)"] },
+  { name: "Nagercoil Offshore", lat: 8.1780, lng: 77.4280, species: ["Mackerel", "Sardine"] },
+  { name: "Ratnagiri Offshore", lat: 16.9902, lng: 73.3120, species: ["Bombil", "Surmai"] }
+];
+
+// function to create circle marker
+function createCircle(color) {
+  return {
+    radius: 55000,         // large radius for full India view
+    color: color,
+    fillColor: color,
+    fillOpacity: 0.5
+  };
+}
+
+// semi-circle layout with spacing
+function calculateSemiCircleOffsets(count, radius = 0.18) {
+  const offsets = [];
+  if (count === 1) return [[0, 0]];
+  const startAngle = -Math.PI / 2;
+  const endAngle = Math.PI / 2;
+  for (let i = 0; i < count; i++) {
+    const angle = startAngle + (i / (count - 1)) * (endAngle - startAngle);
+    offsets.push([radius * Math.sin(angle), radius * Math.cos(angle)]);
+  }
+  return offsets;
+}
+
+// add circle markers with tooltips
+fishingSpots.forEach(spot => {
+  const offsets = calculateSemiCircleOffsets(spot.species.length);
+  spot.species.forEach((fish, index) => {
+    const color = speciesColors[fish] || "#0000ff";
+    const latOffset = offsets[index][0];
+    const lngOffset = offsets[index][1];
+    const marker = L.circle([spot.lat + latOffset, spot.lng + lngOffset], createCircle(color))
+      .addTo(map)
+      .bindPopup(`<strong>${spot.name}</strong><br>Species: ${fish}`);
+    
+    marker.bindTooltip(`${spot.name} — ${fish}`, {permanent: false, direction: 'top'});
+  });
+});
+
+// fit map to all markers
+const allCoords = fishingSpots.flatMap(s => s.species.map((_, i) => [s.lat, s.lng]));
+const bounds = L.latLngBounds(allCoords);
+map.fitBounds(bounds.pad(0.4));
+
+</script>
+</body>
+</html>

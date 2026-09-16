@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Fig. 2 — F5-TTS Voice Cloning Architecture (Linear)</title>
+  <style>
+    body { font-family: 'Segoe UI', Roboto, Arial; background: #fff; padding: 14px; }
+    svg { width: 100%; height: 620px; }
+    .box { fill: #ffffff; stroke: #222; stroke-width: 3px; rx: 12; }
+    .box-primary { fill: #fff3c9; stroke: #222; stroke-width: 2.6px; rx: 12; }
+    .box-accent { fill: #e9f7ef; stroke: #222; stroke-width: 2.6px; rx: 12; }
+    .pill { fill: #ffdfe6; stroke: #222; stroke-width: 2.6px; rx: 36; }
+    .label { font-weight: 800; font-size: 18px; fill: #111; }
+    .sub { font-size: 13px; fill: #111; }
+    .arrow { stroke: #111; stroke-width: 3px; fill: none; marker-end: url(#arrowhead); }
+    .small { font-size: 12px; }
+    .caption { font-size: 15px; text-anchor: middle; fill: #222; }
+  </style>
+</head>
+<body>
+  <svg viewBox="0 0 1200 620" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <marker id="arrowhead" markerWidth="12" markerHeight="12" refX="8" refY="6" orient="auto">
+        <path d="M0,0 L12,6 L0,12 z" fill="#111" />
+      </marker>
+      <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+        <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000" flood-opacity="0.12" />
+      </filter>
+    </defs>
+
+    <!-- Title box -->
+    <text x="600" y="28" text-anchor="middle" class="label">Fig. 2 — Architecture of the F5-TTS Voice Cloning Platform</text>
+
+    <!-- Leftmost: Input Text -->
+    <rect x="30" y="80" width="160" height="70" class="box" style="filter:url(#shadow)" />
+    <text x="110" y="112" text-anchor="middle" class="label">Input Text</text>
+    <text x="110" y="134" text-anchor="middle" class="sub">(tokens / phonemes)</text>
+
+    <!-- Linear Projection / Embedding -->
+    <rect x="220" y="75" width="190" height="80" class="box-primary" />
+    <text x="315" y="102" text-anchor="middle" class="label">Linear Projection</text>
+    <text x="315" y="122" text-anchor="middle" class="sub">Embedded phonemes + positional</text>
+
+    <!-- FastSpeech block (Encoder -> Decoder) -->
+    <rect x="440" y="50" width="260" height="160" class="box" style="filter:url(#shadow)" />
+    <text x="570" y="76" text-anchor="middle" class="label">FastSpeech</text>
+
+    <rect x="460" y="95" width="220" height="50" class="box-primary" />
+    <text x="570" y="125" text-anchor="middle" class="sub">Encoder: extract linguistic & contextual features</text>
+
+    <rect x="460" y="150" width="220" height="50" class="box-primary" />
+    <text x="570" y="180" text-anchor="middle" class="sub">Decoder: generate mel-spectrogram</text>
+
+    <!-- Arrow from input -> projection -> FastSpeech -->
+    <path d="M190,115 L220,115" class="arrow" />
+    <path d="M410,115 L460,115" class="arrow" />
+
+    <!-- Target Speaker Embedding (pill) placed above Flow Matching -->
+    <rect x="720" y="60" width="210" height="70" rx="36" class="pill" style="filter:url(#shadow)" />
+    <text x="825" y="92" text-anchor="middle" class="label">Target Speaker</text>
+    <text x="825" y="110" text-anchor="middle" class="sub">Embedding (condition)</text>
+
+    <!-- Flow Matching block -->
+    <rect x="720" y="170" width="320" height="220" class="box-accent" style="filter:url(#shadow)" />
+    <text x="880" y="200" text-anchor="middle" class="label">Flow Matching</text>
+    <rect x="760" y="230" width="240" height="120" class="box-primary" />
+    <text x="880" y="260" text-anchor="middle" class="sub">Decoder: refine mel-spectrogram</text>
+    <text x="880" y="280" text-anchor="middle" class="small">(expressive prosody + speaker traits)</text>
+
+    <!-- Arrows: FastSpeech -> Flow Matching -->
+    <path d="M720,170 L700,170 L700,130" class="arrow" />
+    <path d="M720,170 L700,170 L700,300" class="arrow" />
+    <path d="M700,170 L700,170" class="arrow" />
+
+    <!-- Arrow from FastSpeech decoder output to Flow Matching input (horizontal) -->
+    <path d="M600,175 L720,175" class="arrow" />
+
+    <!-- Arrow from Target Speaker Embedding to Flow Matching (conditioning) -->
+    <path d="M825,130 L825,170" class="arrow" />
+
+    <!-- Vocoder block and final output on the right -->
+    <rect x="1060" y="220" width="120" height="80" class="box" style="filter:url(#shadow)" />
+    <text x="1120" y="250" text-anchor="middle" class="label">Vocoder</text>
+    <text x="1120" y="270" text-anchor="middle" class="sub">waveform reconstruction</text>
+
+    <rect x="1060" y="60" width="120" height="80" class="box" style="filter:url(#shadow)" />
+    <text x="1120" y="88" text-anchor="middle" class="label">Cloned Speech</text>
+    <text x="1120" y="108" text-anchor="middle" class="sub">(speaker output)</text>
+
+    <!-- Arrow: Flow Matching -> Vocoder -->
+    <path d="M1040,280 L1060,280" class="arrow" />
+    <path d="M1060,280 L1060,300 L1060,300 L1060,300" class="arrow" />
+    <path d="M1060,300 L1060,300 L1060,140 L1060,140" class="arrow" />
+
+    <!-- Arrow: Vocoder -> Cloned Speech -->
+    <path d="M1180,100 L1180,100" class="arrow" />
+    <path d="M1180,110 L1180,110" class="arrow" />
+
+    <!-- Cleaner connection from Flow Matching to Vocoder (diagonal) -->
+    <path d="M1040,260 L1060,200" class="arrow" />
+    <path d="M1060,200 L1060,140" class="arrow" />
+
+    <!-- Small footer note -->
+    <g>
+      <text x="600" y="598" class="caption">FastSpeech: encoder-decoder → mel-spectrogram. Flow Matching: refines prosody using target speaker embedding. Vocoder reconstructs waveform.</text>
+    </g>
+  </svg>
+</body>
+</html>

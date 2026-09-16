@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Indian Fish Encyclopedia</title>
+<style>
+/* Your CSS from earlier stays exactly the same */
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width:1400px; margin:auto; padding:20px; background:#f0f2f5; color:#333;}
+.header {text-align:center; background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); color:white; padding:40px; border-radius:20px; box-shadow:0 10px 30px rgba(0,123,255,0.3); margin-bottom:40px;}
+.search-container {background:white; padding:25px; border-radius:15px; box-shadow:0 6px 20px rgba(0,0,0,0.1); margin-bottom:40px; display:flex; gap:20px; flex-wrap:wrap;}
+.search-box, .filter-select {flex:1; padding:15px; border:1px solid #ccc; border-radius:10px; font-size:1.1em; box-sizing:border-box;}
+.fish-grid {display:grid; grid-template-columns:repeat(auto-fit, minmax(380px, 1fr)); gap:30px;}
+.fish-card {background:white; border-radius:18px; padding:30px; box-shadow:0 8px 25px rgba(0,0,0,0.12); transition:transform 0.3s ease, box-shadow 0.3s ease; border-left:6px solid #007bff;}
+.fish-card:hover {transform: translateY(-10px); box-shadow:0 15px 40px rgba(0,0,0,0.2);}
+.fish-image-container {width:100%; height:200px; margin-bottom:20px; border-radius:12px; overflow:hidden; position:relative;}
+.fish-image {width:100%; height:100%; object-fit:cover; border-radius:12px; box-shadow:0 4px 8px rgba(0,0,0,0.1);}
+.fish-name {font-size:1.5em; font-weight:700; color:#007bff; margin-bottom:10px; border-bottom:3px solid #e3f2fd; padding-bottom:8px;}
+.scientific-name {font-style:italic; color:#666; font-size:1em; margin-bottom:12px; font-weight:500;}
+.fish-type {background:#e3f2fd; color:#1976d2; padding:8px 15px; border-radius:20px; font-size:0.9em; font-weight:600; display:inline-block; margin-bottom:18px;}
+.fish-description {color:#555; line-height:1.7; margin-bottom:20px; font-size:1em;}
+.fish-details {background:#f8f9fa; padding:20px; border-radius:12px; font-size:0.95em;}
+.fish-details .detail-row {display:flex; margin-bottom:10px; padding-bottom:8px; border-bottom:1px solid #e9ecef;}
+.fish-details .detail-row:last-child {border-bottom:none; margin-bottom:0;}
+.detail-label {font-weight:700; color:#495057; min-width:100px; margin-right:15px;}
+.detail-value {color:#6c757d; flex:1;}
+.no-results {grid-column:1/-1; text-align:center; color:#666; font-size:1.2em; padding:40px; background:white; border-radius:15px; box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🐟 Indian Fish Encyclopedia</h1>
+  <p>Explore freshwater, marine, and anadromous fish species found across India.</p>
+</div>
+
+<div class="search-container">
+  <select class="filter-select" id="fishNameFilter">
+    <option value="">Select Fish by Name</option>
+  </select>
+  <select class="filter-select" id="habitatFilter">
+    <option value="">All Water Types</option>
+    <option value="Freshwater">Freshwater</option>
+    <option value="Marine">Marine</option>
+    <option value="Anadromous">Anadromous</option>
+  </select>
+  <select class="filter-select" id="familyFilter">
+    <option value="">All Families</option>
+  </select>
+</div>
+
+<div class="fish-grid" id="fishGrid"></div>
+
+<script>
+// Paste all your fishData array here (from Rohu, Catla, etc. including Marine fishes)
+const fishData = [
+  {
+    name: "Rohu",
+    scientificName: "Labeo rohita",
+    family: "Cyprinidae (Carp Family)",
+    type: "Freshwater",
+    habitat: "Rivers, Lakes, Ponds, Reservoirs",
+    size: "30-90 cm, 1-4 kg",
+    distribution: "Ganges, Brahmaputra, Indus river systems across North India",
+    description: "Most important Indian carp in aquaculture. Silver-colored body with large scales, streamlined shape. Highly valued for taste and nutritional content.",
+    diet: "Omnivorous - algae, plankton, aquatic plants, small invertebrates",
+    season: "Year-round, peaks during monsoon spawning",
+    localNames: "Rui (Bengali), Rohu (Hindi), Rohita (Sanskrit), Rohu (Marathi)",
+    image: "https://alfirdoosfishfarm.com/wp-content/uploads/2025/06/Rohu.png"
+  },
+  {
+    name: "Catla",
+    scientificName: "Labeo catla",
+    family: "Cyprinidae (Carp Family)",
+    type: "Freshwater",
+    habitat: "Rivers, Lakes, Large reservoirs",
+    size: "60-180 cm, 2-38 kg",
+    distribution: "Northern India, Bangladesh, Myanmar, Nepal - Ganges system",
+    description: "Largest Indian carp with distinctive large head and protruding lower jaw. Surface feeder with specialized gill rakers.",
+    diet: "Filter feeder - zooplankton, phytoplankton using specialized gill rakers",
+    season: "Best during post-monsoon period (Oct-Jan)",
+    localNames: "Katla (Bengali/Hindi), Bhakura (Nepali), Catla (English)",
+    image: "https://www.shutterstock.com/image-photo/fresh-water-catla-katla-fish-600nw-2475947397.jpg"
+  },
+  {
+    name: "Mrigal",
+    scientificName: "Cirrhinus mrigala",
+    family: "Cyprinidae (Carp Family)",
+    type: "Freshwater",
+    habitat: "Rivers, ponds, lakes, canals",
+    size: "30-100 cm, 1-12 kg",
+    distribution: "Ganges, Brahmaputra, Indus systems - Northern & Eastern India",
+    description: "Bottom-dwelling carp with elongated body. Important in polyculture with Rohu and Catla. Hardy species adaptable to various conditions.",
+    diet: "Bottom feeder - detritus, algae, mud, aquatic vegetation, organic matter",
+    season: "Year-round, spawning peaks in monsoon",
+    localNames: "Mrigel (Bengali), Mirgal (Hindi), Mourala (Assamese)",
+    image: "https://upload.wikimedia.org/wikipedia/commons/1/19/Cirrhinus_cirrhosus_from_the_Nandu_River.jpg"
+  },
+  {
+    name: "Hilsa",
+    scientificName: "Tenualosa ilisha",
+    family: "Clupeidae (Herring Family)",
+    type: "Anadromous",
+    habitat: "Rivers, estuaries, coastal waters",
+    size: "30-60 cm, 1-3 kg",
+    distribution: "Bay of Bengal, Ganges-Brahmaputra-Meghna river system",
+    description: "Highly prized migratory fish, cultural icon of Bengal. Silver body with fine scales.",
+    diet: "Plankton, small crustaceans, algae",
+    season: "Monsoon migration (June-October), peak July-Sept",
+    localNames: "Ilish (Bengali), Hilsa (English)",
+    image: "https://assets.cntraveller.in/photos/60ba18b2f27d46df614fc2f8/master/pass/Untitled-design-87.jpg"
+  },
+  {
+    name: "Common Carp",
+    scientificName: "Cyprinus carpio",
+    family: "Cyprinidae (Carp Family)",
+    type: "Freshwater",
+    habitat: "Ponds, lakes, slow rivers",
+    size: "25-80 cm, 1-10 kg",
+    distribution: "Introduced throughout India",
+    description: "Golden-bronze color, hardy species, fast-growing.",
+    diet: "Omnivorous",
+    season: "Year-round",
+    localNames: "Common Carp (English)",
+    image: "https://cdn.britannica.com/34/199834-050-ACEB68C7/Carp.jpg"
+  },
+  {
+    name: "Tilapia",
+    scientificName: "Oreochromis niloticus",
+    family: "Cichlidae (Cichlid Family)",
+    type: "Freshwater",
+    habitat: "Ponds, lakes, rivers, reservoirs",
+    size: "20-40 cm, 0.5-2 kg",
+    distribution: "Introduced species in India",
+    description: "African origin, hardy, fast-growing, good for aquaculture.",
+    diet: "Omnivorous",
+    season: "Year-round",
+    localNames: "Tilapia",
+    image: "https://upload.wikimedia.org/wikipedia/commons/3/3f/Til%C3%A1pia_ou_Sarotherodon_niloticus_2.jpg"
+  },
+  {
+    name: "Catfish (Magur)",
+    scientificName: "Clarias batrachus",
+    family: "Clariidae (Air-breathing Catfish)",
+    type: "Freshwater",
+    habitat: "Ponds, swamps, paddy fields",
+    size: "20-50 cm, 0.5-2 kg",
+    distribution: "Throughout India",
+    description: "Air-breathing catfish, smooth scaleless body, highly nutritious.",
+    diet: "Carnivorous",
+    season: "Year-round, active in monsoon",
+    localNames: "Magur",
+    image: "https://cdn.britannica.com/22/141422-050-75094F72/Red-tail-catfish.jpg"
+  },
+  {
+    name: "Golden Mahseer",
+    scientificName: "Tor putitora",
+    family: "Cyprinidae (Carp Family)",
+    type: "Freshwater",
+    habitat: "Hill streams, rivers, rocky pools",
+    size: "50-150 cm, 5-45 kg",
+    distribution: "Himalayan rivers, Western Ghats",
+    description: "Premier game fish of India, golden coloration, endangered.",
+    diet: "Omnivorous",
+    season: "Post-monsoon and winter",
+    localNames: "Golden Mahseer",
+    image: "https://upload.wikimedia.org/wikipedia/commons/e/ee/Tor_tambroid_160811-61602_ffi.JPG"
+  },
+  {
+    name: "Snakehead (Murrel)",
+    scientificName: "Channa striata",
+    family: "Channidae (Snakehead Family)",
+    type: "Freshwater",
+    habitat: "Ponds, swamps, flooded fields",
+    size: "30-90 cm, 1-8 kg",
+    distribution: "Throughout India",
+    description: "Predatory fish with snake-like head, firm white meat.",
+    diet: "Carnivorous",
+    season: "Year-round",
+    localNames: "Murrel",
+    image: "https://people.com/thmb/H90etVLn9RzBOnWqYE2q6zGDmEM=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc():focal(999x0:1001x2)/snakehead-4-2000-96a9886d7d43429fa1f19f2ea9fc084b.jpg"
+  },
+  {
+    name: "Indian Mackerel",
+    scientificName: "Rastrelliger kanagurta",
+    family: "Scombridae",
+    type: "Marine",
+    habitat: "Coastal waters, continental shelf",
+    size: "15-35 cm, 200-400 g",
+    distribution: "East and west coasts of India",
+    description: "Pelagic fish, rich in omega-3 fatty acids, popular in cuisine.",
+    diet: "Zooplankton, small fish",
+    season: "Peak: August-November",
+    localNames: "Bangda",
+    image: "https://upload.wikimedia.org/wikipedia/commons/4/41/Rastrelliger_kanagurta_JNC2855.JPG"
+  },
+  {
+    name: "Silver Pomfret",
+    scientificName: "Pampus argenteus",
+    family: "Stromateidae",
+    type: "Marine",
+    habitat: "Coastal waters, deeper seas",
+    size: "25-60 cm, 0.5-4 kg",
+    distribution: "Arabian Sea, Bay of Bengal",
+    description: "Flat, disc-shaped silver body, delicate white flesh.",
+    diet: "Small fish, crustaceans",
+    season: "Peak: Oct-March",
+    localNames: "Paplet",
+    image: "https://static.wixstatic.com/media/42a449_c2f7abe781c047b7adbbd89b4e4eaac3~mv2.png/v1/fill/w_560,h_318,al_c,lg_1,q_85,enc_avif,quality_auto/Image-empty-state.png"
+  },
+  {
+    name: "Indian Oil Sardine",
+    scientificName: "Sardinella longiceps",
+    family: "Clupeidae",
+    type: "Marine",
+    habitat: "Coastal waters",
+    size: "15-20 cm, 100-200 g",
+    distribution: "Western and Eastern coasts of India",
+    description: "Small schooling fish, high in omega-3, important commercially.",
+    diet: "Plankton, small crustaceans",
+    season: "Year-round",
+    localNames: "Mathi",
+    image: "https://5.imimg.com/data5/VY/IM/GLADMIN-34449827/indian-oil-sardine-500x500.png"
+  },
+  {
+    name: "Ribbonfish",
+    scientificName: "Trichiurus lepturus",
+    family: "Trichiuridae",
+    type: "Marine",
+    habitat: "Nearshore, continental shelf",
+    size: "50-150 cm, 1-5 kg",
+    distribution: "Coasts of India",
+    description: "Elongated, ribbon-like silver body, popular fried.",
+    diet: "Small fish, crustaceans, squid",
+    season: "Year-round",
+    localNames: "Lele",
+    image: "https://img.frozenfish.direct/wp-content/uploads/2023/02/AdobeStock_30213693011-e1677568659287.jpeg"
+  },
+  {
+    name: "Seer Fish (King Mackerel)",
+    scientificName: "Scomberomorus guttatus",
+    family: "Scombridae",
+    type: "Marine",
+    habitat: "Coastal waters, continental shelf",
+    size: "60-200 cm, 5-40 kg",
+    distribution: "Both east and west coasts of India",
+    description: "Premium marine fish, elongated body, sharp teeth. Known as 'Surmai' in markets.",
+    diet: "Carnivorous – smaller fish, squid, crustaceans",
+    season: "Year-round, peak catches in Oct-Feb",
+    localNames: "Surmai (Marathi/Hindi), Neymeen (Malayalam), Anjal (Kannada)",
+    image: "https://www.fishofish.in/wp-content/uploads/seer-slice.jpg"
+  },
+  {
+    name: "Indian Salmon (Rawas)",
+    scientificName: "Polynemus indicus",
+    family: "Polynemidae (Threadfin Family)",
+    type: "Marine",
+    habitat: "Estuaries, coastal waters, muddy bottoms",
+    size: "50-150 cm, 2-12 kg",
+    distribution: "West coast of India (especially Maharashtra, Gujarat)",
+    description: "Highly prized fish with soft pinkish flesh, delicate flavor. Commonly called Indian Salmon.",
+    diet: "Crustaceans, mollusks, smaller fish",
+    season: "Year-round, peak in monsoon and winter",
+    localNames: "Rawas (Hindi/Marathi)",
+    image: "https://cti.farziengineer.co/products/Indian_Salmon_Whole_1-2f37abe28e0d.png?auto=format&sharp=20&ixlib=react-9.3.0"
+  },
+  {
+    name: "Barramundi (Asian Seabass)",
+    scientificName: "Lates calcarifer",
+    family: "Latidae",
+    type: "Marine/Brackish",
+    habitat: "Estuaries, lagoons, coastal rivers",
+    size: "60-120 cm, 5-25 kg",
+    distribution: "Coastal waters of eastern and southern India",
+    description: "Popular aquaculture species, white flaky meat, mild flavor. Also a prized sport fish.",
+    diet: "Fish, prawns, mollusks",
+    season: "Available year-round, peak winter",
+    localNames: "Bhetki (Bengali), Koduva (Tamil)",
+    image: "https://s3.divcom.com/seafoodsource.com/images/6047ebbc2c9663a2980442747f380a60.jpeg"
+  },
+  {
+    name: "Indian Threadfin Bream",
+    scientificName: "Nemipterus japonicus",
+    family: "Nemipteridae",
+    type: "Marine",
+    habitat: "Sandy bottoms of coastal waters",
+    size: "20-40 cm, up to 500 g",
+    distribution: "Bay of Bengal, Arabian Sea",
+    description: "Small demersal fish, pinkish body, very popular in South Indian cuisine.",
+    diet: "Crustaceans, worms, benthic organisms",
+    season: "Year-round, especially post-monsoon",
+    localNames: "Kilimeen (Malayalam), Sankara Meen (Tamil)",
+    image: "https://media.istockphoto.com/id/1292256215/photo/golden-threadfin-bream.jpg?s=612x612&w=0&k=20&c=LBjaMjZRW1bgO9BJ5UenZj9cLzeTAnqrlDjnNtFrxgQ="
+  },
+  {
+    name: "Indian Anchovy",
+    scientificName: "Stolephorus indicus",
+    family: "Engraulidae",
+    type: "Marine",
+    habitat: "Nearshore waters, schooling fish",
+    size: "5-12 cm, 10-20 g",
+    distribution: "Widespread along both coasts of India",
+    description: "Tiny schooling fish, used fresh and dried. High demand in Kerala and coastal regions.",
+    diet: "Plankton, small crustaceans",
+    season: "Monsoon and winter",
+    localNames: "Nethili (Tamil), Kozhuva (Malayalam)",
+    image: "https://upload.wikimedia.org/wikipedia/commons/7/71/Stolephorus_indicus.jpg"
+  },
+  {
+    name: "Butter Catfish",
+    scientificName: "Ompok bimaculatus",
+    family: "Siluridae",
+    type: "Freshwater",
+    habitat: "Rivers, ponds, floodplains",
+    size: "25-60 cm, 500 g - 2 kg",
+    distribution: "Northern and eastern India",
+    description: "Delicate, soft-fleshed catfish with high market value. Very tasty.",
+    diet: "Insects, worms, small fish",
+    season: "Spawning in monsoon",
+    localNames: "Pabda (Bengali), Pabdah (Hindi)",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1JZ_0hWAOkGDfb5GjImuKZG-gOjTsIQZr2w&s"
+  },
+  {
+    name: "Glass Perch",
+    scientificName: "Parambassis ranga",
+    family: "Ambassidae",
+    type: "Freshwater/Brackish",
+    habitat: "Lakes, rivers, estuaries",
+    size: "5-12 cm",
+    distribution: "All over India",
+    description: "Transparent-bodied small fish, ornamental and food value in some areas.",
+    diet: "Zooplankton, larvae",
+    season: "Year-round",
+    localNames: "Indian Glassfish",
+    image: "https://thumbs.dreamstime.com/b/indian-glass-perch-aquarium-fish-chanda-ranga-36978922.jpg"
+  },
+  {
+    name: "Pearlspot (Karimeen)",
+    scientificName: "Etroplus suratensis",
+    family: "Cichlidae",
+    type: "Brackish/Freshwater",
+    habitat: "Backwaters, lagoons, lakes",
+    size: "15-30 cm, 250-800 g",
+    distribution: "Kerala, southern India",
+    description: "State fish of Kerala, prized delicacy, greenish body with pearl-like spots.",
+    diet: "Algae, detritus, small invertebrates",
+    season: "Year-round",
+    localNames: "Karimeen (Malayalam)",
+    image: "https://upload.wikimedia.org/wikipedia/commons/7/78/Etroplus_suratensis.jpg"
+  },
+  {
+    name: "Flying Fish",
+    scientificName: "Exocoetus volitans",
+    family: "Exocoetidae",
+    type: "Marine",
+    habitat: "Open ocean, near-surface waters",
+    size: "20-30 cm",
+    distribution: "Offshore Indian seas",
+    description: "Known for ability to glide above water using wing-like fins.",
+    diet: "Plankton, small fish",
+    season: "Summer months",
+    localNames: "Para (Tamil), Cheel Pankhi Machhli (Hindi)",
+    image: "https://readingqualityfish.co.uk/cdn/shop/products/Flyingfish.png?v=1605880254"
+  },
+  {
+    name: "Climbing Perch",
+    scientificName: "Anabas testudineus",
+    family: "Anabantidae",
+    type: "Freshwater/Brackish",
+    habitat: "Ponds, rivers, swamps, rice fields",
+    size: "15–25 cm",
+    distribution: "Eastern India, Assam, West Bengal, Kerala",
+    description: "Hardy edible fish, can survive out of water for hours. Popular in Northeastern cuisine.",
+    diet: "Insects, detritus, plant matter",
+    season: "Year-round",
+    localNames: "Koi (Bengali), Kawai (Malayalam)",
+    image: "https://upload.wikimedia.org/wikipedia/commons/f/f0/Anabas_testudineus.png"
+  },
+  {
+    name: "Horse Mackerel",
+    scientificName: "Trachurus trachurus",
+    family: "Carangidae",
+    type: "Marine",
+    habitat: "Schools in coastal waters",
+    size: "15–40 cm",
+    distribution: "Bay of Bengal and Arabian Sea",
+    description: "Tasty mid-size fish, eaten grilled, fried, or curried.",
+    diet: "Small fish, plankton, crustaceans",
+    season: "Peak in post-monsoon",
+    localNames: "Aila (Bengali), Kavalai (Tamil)",
+    image: "https://upload.wikimedia.org/wikipedia/commons/7/7d/Atlantic_Horse_Mackerel.jpg"
+  },
+  {
+    name: "Yellowfin Tuna",
+    scientificName: "Thunnus albacares",
+    family: "Scombridae",
+    type: "Marine",
+    habitat: "Open seas, pelagic zones",
+    size: "50–200 cm",
+    distribution: "Indian Ocean, Lakshadweep, Andaman waters",
+    description: "Large, commercially valuable tuna species, eaten fresh or canned.",
+    diet: "Smaller fish, squid, crustaceans",
+    season: "Year-round, peak in offshore fisheries",
+    localNames: "Tuna, Choora (Malayalam)",
+    image: "https://channelfish.com/wp-content/uploads/2018/04/yellowfin.jpg"
+  },
+  {
+    name: "Greater Amberjack",
+    scientificName: "Seriola dumerili",
+    family: "Carangidae",
+    type: "Marine",
+    habitat: "Deep offshore waters, rocky reefs",
+    size: "50–190 cm",
+    distribution: "Indian Ocean, deeper waters off India",
+    description: "Highly prized sport and food fish with firm, white flesh.",
+    diet: "Fish, squid, crustaceans",
+    season: "Winter months",
+    localNames: "Amberjack",
+    image: "https://ryukoch.b-cdn.net/images/main/Kanpachi%20Greater%20Amberjack.jpg"
+  },
+  {
+    name: "Emperor Fish",
+    scientificName: "Lethrinus nebulosus",
+    family: "Lethrinidae",
+    type: "Marine",
+    habitat: "Coral reefs, sandy bottoms",
+    size: "30–80 cm",
+    distribution: "Indian Ocean, Lakshadweep, Andaman",
+    description: "Popular reef fish, mild flavor, eaten grilled or curried.",
+    diet: "Crustaceans, mollusks, smaller fish",
+    season: "Year-round",
+    localNames: "Kalimeen (Tamil), Sheri (Arabic Gulf trade)",
+    image: "https://img.frozenfish.direct/wp-content/uploads/2023/02/AdobeStock_4549148031.jpeg.webp"
+  },
+  {
+    name: "Silver Belly Fish",
+    scientificName: "Leiognathus splendens",
+    family: "Leiognathidae",
+    type: "Marine",
+    habitat: "Shallow coastal waters",
+    size: "10–20 cm",
+    distribution: "Bay of Bengal, Arabian Sea",
+    description: "Small edible fish, often dried and salted for consumption.",
+    diet: "Plankton, worms, small crustaceans",
+    season: "Year-round",
+    localNames: "Medi (Telugu), Vaval (Tamil)",
+    image: "https://5.imimg.com/data5/SF/AJ/GLADMIN-7351739/silver-belly-pony-fish.png"
+  },
+  {
+    name: "Giant Trevally",
+    scientificName: "Caranx ignobilis",
+    family: "Carangidae",
+    type: "Marine",
+    habitat: "Reefs, lagoons, offshore waters",
+    size: "60–170 cm",
+    distribution: "Indian Ocean, Andaman & Nicobar Islands",
+    description: "Strong predatory fish, highly valued as food and game fish.",
+    diet: "Fish, squid, crustaceans",
+    season: "Winter season, offshore fishing",
+    localNames: "GT, Vatta (Malayalam)",
+    image: "https://www.sydneyfishmarket.com.au/Portals/0/EasyDNNnews/1363/img-Giant-Trevally.jpg"
+  },
+  {
+    name: "King Mackerel (Indo-Pacific Spanish Mackerel)",
+    scientificName: "Scomberomorus commerson",
+    family: "Scombridae",
+    type: "Marine",
+    habitat: "Coastal waters, offshore pelagic zones",
+    size: "60–240 cm",
+    distribution: "Indian Ocean, Arabian Sea, Bay of Bengal",
+    description: "Large predatory fish, highly prized for steaks and curries.",
+    diet: "Small fish, squid",
+    season: "Peak in winter and pre-summer",
+    localNames: "Surmai (Marathi), Neymeen (Malayalam), Vanjaram (Tamil/Telugu)",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Scgut_u0.gif/250px-Scgut_u0.gif"
+  },
+  {
+    name: "Bombay Duck",
+    scientificName: "Harpadon nehereus",
+    family: "Synodontidae",
+    type: "Marine",
+    habitat: "Coastal waters, muddy seabeds",
+    size: "25–40 cm",
+    distribution: "West coast of India, especially Mumbai & Gujarat",
+    description: "Iconic fish of Mumbai cuisine, usually dried or fried.",
+    diet: "Small fish, plankton, shrimp",
+    season: "Peak during October–January",
+    localNames: "Bombil (Marathi), Bummalo (English trade name)",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQusgxBKyDf2XDcmwn84dSv4hce68AeFVUXlg&s"
+  },
+  {
+    name: "Ladyfish",
+    scientificName: "Elops machnata",
+    family: "Elopidae",
+    type: "Marine/Estuarine",
+    habitat: "Coastal waters, estuaries, lagoons",
+    size: "30–100 cm",
+    distribution: "Kerala, Karnataka, Tamil Nadu coasts",
+    description: "Slender edible fish with soft, tasty meat, often fried.",
+    diet: "Small fish, prawns, crustaceans",
+    season: "Year-round",
+    localNames: "Kane (Konkani), Poovan (Malayalam)",
+    image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjq1UKjrz-5saPtJQCFTSz-kzJOZixb2n6nqFHRTUwps8Heo7REDc9dbZnt4NzJJmg1U1QxEJ65tdinjEeZmXSDKF63XiqqPYxSCnaSp0SYPbr3hTq9VRhFVF72sdK-QkIOw_OLBYaL0bE/s1600/ladyfish.jpg"
+  },
+  {
+    name: "Silver Croaker",
+    scientificName: "Johnius argentatus",
+    family: "Sciaenidae",
+    type: "Marine",
+    habitat: "Coastal waters, muddy bottoms",
+    size: "20–60 cm",
+    distribution: "East and west coasts of India",
+    description: "Popular food fish, often dried or used in curries.",
+    diet: "Crustaceans, worms, small fish",
+    season: "Winter and early summer",
+    localNames: "Dhoma (Gujarati), Koth (Konkani)",
+    image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjq1UKjrz-5saPtJQCFTSz-kzJOZixb2n6nqFHRTUwps8Heo7REDc9dbZnt4NzJJmg1U1QxEJ65tdinjEeZmXSDKF63XiqqPYxSCnaSp0SYPbr3hTq9VRhFVF72sdK-QkIOw_OLBYaL0bE/s1600/ladyfish.jpg"
+  },
+  {
+    name: "Goldspot Mullet",
+    scientificName: "Liza parsia",
+    family: "Mugilidae",
+    type: "Marine/Estuarine",
+    habitat: "Estuaries, lagoons, brackish waters",
+    size: "15–30 cm",
+    distribution: "All along Indian coasts",
+    description: "Small mullet species, widely eaten fried or curried.",
+    diet: "Detritus, algae, small crustaceans",
+    season: "Year-round",
+    localNames: "Parshe (Bengali), Kola Meen (Tamil)",
+    image: "https://media.australian.museum/media/dd/images/I.51f5017.width-800.6acb968.jpg"
+  },
+  {
+    name: "Milkfish",
+    scientificName: "Chanos chanos",
+    family: "Chanidae",
+    type: "Marine/Brackish",
+    habitat: "Lagoons, estuaries, shallow seas",
+    size: "40–100 cm",
+    distribution: "Andaman & Nicobar, Lakshadweep, coastal India",
+    description: "Important aquaculture fish, eaten grilled or curried.",
+    diet: "Plankton, algae",
+    season: "Available year-round",
+    localNames: "Milkfish, Bangda Chanos",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS0lB6iqjuhwRL7kAfHWMobw7EQULvJqkLliA&s"
+  },
+  {
+    name: "Spotted Sea Bass",
+    scientificName: "Lateolabrax maculatus",
+    family: "Moronidae",
+    type: "Marine",
+    habitat: "Estuaries, coastal lagoons, shallow seas",
+    size: "30–80 cm",
+    distribution: "Bay of Bengal, Indian Ocean",
+    description: "Edible seabass, highly prized for delicate white meat.",
+    diet: "Fish, prawns, mollusks",
+    season: "Year-round",
+    localNames: "Sea Bass, Kalundar",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTC7ZQUqKFWTpmmJ7V0sevZZnJeuz8WOh9IAQ&s"
+  },
+  {
+    name: "Grouper Fish",
+    scientificName: "Epinephelus malabaricus",
+    family: "Serranidae",
+    type: "Marine",
+    habitat: "Reefs, rocky bottoms, lagoons",
+    size: "60–200 cm",
+    distribution: "Coastal and offshore waters of India",
+    description: "Large reef fish, firm white flesh, widely eaten and exported.",
+    diet: "Fish, crabs, lobsters",
+    season: "Year-round",
+    localNames: "Kalava (Tamil), Reef Cod (English)",
+    image: "https://fishingthespot.ie/images/photo_article/big_20191002162345_GT.jpeg"
+  },
+  {
+    name: "Silver Grunter",
+    scientificName: "Pomadasys argenteus",
+    family: "Haemulidae",
+    type: "Marine",
+    habitat: "Shallow coastal waters",
+    size: "20–50 cm",
+    distribution: "Arabian Sea, Bay of Bengal",
+    description: "Popular coastal fish, often pan-fried or curried.",
+    diet: "Crustaceans, mollusks, small fish",
+    season: "Year-round",
+    localNames: "Karwa (Marathi), Kora (Tamil)",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTQbG0apFkTTE8ORtzyk5hnySBHgXyHc6iwgQ&s"
+  }
+
+
+
+
+  // 22 more fish can be added similarly with image URLs...
+];
+
+// Dynamic dropdowns
+const fishGrid = document.getElementById("fishGrid");
+const fishNameFilter = document.getElementById("fishNameFilter");
+const habitatFilter = document.getElementById("habitatFilter");
+const familyFilter = document.getElementById("familyFilter");
+
+// Populate dropdowns
+const families = [...new Set(fishData.map(f=>f.family))];
+families.forEach(fam=>{
+  const opt = document.createElement("option");
+  opt.value = fam;
+  opt.textContent = fam;
+  familyFilter.appendChild(opt);
+});
+
+fishData.forEach(fish=>{
+  const opt = document.createElement("option");
+  opt.value = fish.name;
+  opt.textContent = fish.name;
+  fishNameFilter.appendChild(opt);
+});
+
+// Render function
+function renderFish(filteredData) {
+  fishGrid.innerHTML = "";
+  if(filteredData.length === 0) {
+    fishGrid.innerHTML = `<div class="no-results">No fish found matching your criteria.</div>`;
+    return;
+  }
+  filteredData.forEach(fish=>{
+    const card = document.createElement("div");
+    card.className = "fish-card";
+    card.innerHTML = `
+      <div class="fish-image-container">
+        <img class="fish-image" src="${fish.image}" alt="${fish.name}">
+      </div>
+      <div class="fish-name">${fish.name}</div>
+      <div class="scientific-name">${fish.scientificName}</div>
+      <div class="fish-type">${fish.type}</div>
+      <div class="fish-description">${fish.description}</div>
+      <div class="fish-details">
+        <div class="detail-row"><span class="detail-label">Habitat:</span><span class="detail-value">${fish.habitat}</span></div>
+        <div class="detail-row"><span class="detail-label">Size:</span><span class="detail-value">${fish.size}</span></div>
+        <div class="detail-row"><span class="detail-label">Distribution:</span><span class="detail-value">${fish.distribution}</span></div>
+        <div class="detail-row"><span class="detail-label">Diet:</span><span class="detail-value">${fish.diet}</span></div>
+        <div class="detail-row"><span class="detail-label">Season:</span><span class="detail-value">${fish.season}</span></div>
+        <div class="detail-row"><span class="detail-label">Local Names:</span><span class="detail-value">${fish.localNames}</span></div>
+      </div>
+    `;
+    fishGrid.appendChild(card);
+  });
+}
+
+// Initial render
+renderFish(fishData);
+
+// Filters
+function filterFish() {
+  const nameVal = fishNameFilter.value;
+  const habitatVal = habitatFilter.value;
+  const familyVal = familyFilter.value;
+
+  const filtered = fishData.filter(fish => {
+    return (nameVal === "" || fish.name === nameVal) &&
+           (habitatVal === "" || fish.type === habitatVal) &&
+           (familyVal === "" || fish.family === familyVal);
+  });
+
+  renderFish(filtered);
+}
+
+fishNameFilter.addEventListener("change", filterFish);
+habitatFilter.addEventListener("change", filterFish);
+familyFilter.addEventListener("change", filterFish);
+</script>
+
+</body>
+</html>
